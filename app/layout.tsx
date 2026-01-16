@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "S Talent — Org Console | Snoonu",
+  title: "S Talent - Org Console | Snoonu",
   description: "Receive and manage applications for internships, volunteers, and fresh graduates",
 };
 

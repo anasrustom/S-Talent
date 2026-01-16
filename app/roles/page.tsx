@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { Search, Filter, Plus, MapPin, Calendar, Users, TrendingUp, Briefcase, Heart, GraduationCap } from 'lucide-react';
+import { Search, Filter, Plus, MapPin, Calendar, Users, TrendingUp, Briefcase, Heart, GraduationCap, Sparkles, Code, Megaphone, Calculator, Palette, ArrowRight, Target } from 'lucide-react';
 import { Card, StatusPill } from '@/components/ui/common';
 import { roles, applications } from '@/lib/data/mock-data';
 import { useState } from 'react';
@@ -46,6 +46,59 @@ export default function RolesPage() {
               Post New Role
             </button>
           </div>
+        </motion.div>
+
+        {/* SkillProof Feature Banner */}
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Link href="/skillproof">
+            <Card hover className="p-6 bg-gradient-to-r from-snoonu-red/10 via-pink-500/10 to-purple-500/10 border-snoonu-red/30 accent-border cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-snoonu-red to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h2 className="text-xl font-bold text-primary">SkillProof Challenges</h2>
+                      <span className="badge badge-primary text-xs">NEW</span>
+                    </div>
+                    <p className="text-secondary mb-2">
+                      Filter candidates with practical skill assessments — beyond resumes
+                    </p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <Code className="w-4 h-4 text-info" />
+                        <span className="text-muted">Engineering</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Megaphone className="w-4 h-4 text-success" />
+                        <span className="text-muted">Marketing</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Calculator className="w-4 h-4 text-warning" />
+                        <span className="text-muted">Finance</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Palette className="w-4 h-4 text-error" />
+                        <span className="text-muted">Design</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button className="btn btn-primary">
+                    Explore SkillProof
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </Card>
+          </Link>
         </motion.div>
 
         {/* Search and Filters */}
@@ -158,6 +211,16 @@ export default function RolesPage() {
                         <p className="text-lg font-bold text-primary">{role.qualityScore}%</p>
                       </div>
                     </div>
+
+                    {/* SkillProof Badge */}
+                    {role.challengeTemplateId && (
+                      <div className="mb-4 p-2 rounded-lg bg-gradient-to-r from-snoonu-red/10 to-pink-500/10 border border-snoonu-red/20">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 snoonu-red" />
+                          <span className="text-xs font-semibold snoonu-red">SkillProof Enabled</span>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Deadline & New Badge */}
                     <div className="flex items-center justify-between pt-4 border-t border-default">

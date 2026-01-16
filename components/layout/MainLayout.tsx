@@ -15,7 +15,8 @@ import {
   Search,
   Bell,
   ChevronRight,
-  Command
+  Command,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -33,6 +34,7 @@ const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: Briefcase, label: 'Roles', href: '/roles', badge: 6 },
   { icon: Users, label: 'Applicants', href: '/applicants', badge: 89 },
+  { icon: Sparkles, label: 'SkillProof', href: '/skillproof' },
   { icon: GitBranch, label: 'Pipeline', href: '/pipeline' },
   { icon: Calendar, label: 'Interviews', href: '/interviews', badge: 3 },
   { icon: BarChart3, label: 'Insights', href: '/insights' },
