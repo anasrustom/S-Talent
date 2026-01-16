@@ -2,12 +2,13 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Users, Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, AlertCircle, Brain, Zap, Target } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import { applications, roles, interviews, candidates } from '@/lib/data/mock-data';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FitScoreRing } from '@/components/ui/common';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 function AnimatedCounter({ value, duration = 2000 }: { value: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -98,6 +99,15 @@ export default function Dashboard() {
   const shortlistedCount = applications.filter(a => a.stage === 'shortlisted').length;
   const upcomingInterviews = interviews.filter(i => i.status === 'scheduled').length;
 
+  // Application pipeline flow data
+  const pipelineData = [
+    { stage: 'Applied', count: 272 },
+    { stage: 'Screening', count: 145 },
+    { stage: 'Interview', count: 67 },
+    { stage: 'Offer', count: 23 },
+    { stage: 'Hired', count: 15 },
+  ];
+
   // Top candidates by fit score
   const topCandidateApps = applications
     .sort((a, b) => b.fitScore - a.fitScore)
@@ -110,21 +120,21 @@ export default function Dashboard() {
 
   return (
     <MainLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-4 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          className="mb-8"
+          className="mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold text-primary mb-2">
+          <h1 className="text-2xl font-bold text-primary mb-1">
             <span className="gradient-text">Dashboard</span>
           </h1>
-          <p className="text-secondary">Welcome back! Here's what's happening today.</p>
+          <p className="text-sm text-secondary">Welcome back! Here's what's happening today.</p>
         </motion.div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <KPICard
             title="Open Roles"
             value={openRoles}
@@ -149,68 +159,65 @@ export default function Dashboard() {
           <KPICard
             title="Interviews This Week"
             value={upcomingInterviews}
+            change={{ value: 0, positive: true }}
             icon={Calendar}
             delay={0.3}
           />
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* AI Triage Queue */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Application Pipeline Chart */}
           <motion.div
             className="lg:col-span-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Card className="p-6 accent-border">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-snoonu-red/10 rounded-lg flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 snoonu-red" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-primary">AI Triage Queue</h2>
-                    <p className="text-sm text-muted">Top candidates across all roles</p>
-                  </div>
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="text-lg font-bold text-primary">Hiring Pipeline Overview</h2>
+                  <p className="text-xs text-muted">Candidate flow across all roles</p>
                 </div>
-                <Link href="/applicants">
-                  <button className="btn btn-ghost text-sm">
-                    View All
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </Link>
               </div>
-
-              <div className="space-y-4">
-                {topCandidateApps.map((app, index) => (
-                  <motion.div
-                    key={app.id}
-                    className="flex items-center gap-4 p-4 rounded-lg bg-secondary hover:bg-tertiary transition-colors cursor-pointer"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                  >
-                    <div className="flex-shrink-0">
-                      <FitScoreRing score={app.fitScore} size="sm" showLabel={false} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-primary">{app.candidate.name}</h3>
-                      </div>
-                      <p className="text-sm text-muted truncate">{app.role.title}</p>
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {app.aiReasons.slice(0, 3).map((reason, i) => (
-                          <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-tertiary text-secondary">
-                            {reason}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-muted flex-shrink-0" />
-                  </motion.div>
-                ))}
-              </div>
+              
+              <ResponsiveContainer width="100%" height={220}>
+                <AreaChart data={pipelineData}>
+                  <defs>
+                    <linearGradient id="colorPipeline" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#D90217" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#D90217" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
+                  <XAxis 
+                    dataKey="stage" 
+                    stroke="var(--foreground-muted)" 
+                    style={{ fontSize: '11px' }}
+                  />
+                  <YAxis 
+                    stroke="var(--foreground-muted)" 
+                    style={{ fontSize: '11px' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'var(--card)', 
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      fontSize: '12px'
+                    }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="count" 
+                    stroke="#D90217" 
+                    strokeWidth={2}
+                    fill="url(#colorPipeline)" 
+                    animationDuration={1500}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </Card>
           </motion.div>
 
@@ -220,19 +227,19 @@ export default function Dashboard() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-info/10 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-info" />
+            <Card className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-info/10 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-info" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-primary">Upcoming Interviews</h2>
-                  <p className="text-sm text-muted">This week</p>
+                  <h2 className="text-base font-bold text-primary">Upcoming Interviews</h2>
+                  <p className="text-xs text-muted">This week</p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                {interviews.map((interview, index) => {
+              <div className="space-y-2">
+                {interviews.slice(0, 3).map((interview, index) => {
                   const app = applications.find(a => a.id === interview.applicationId)!;
                   const candidate = candidates.find(c => c.id === app?.candidateId);
                   const date = new Date(interview.scheduledAt);
@@ -240,24 +247,21 @@ export default function Dashboard() {
                   return (
                     <motion.div
                       key={interview.id}
-                      className="p-3 rounded-lg bg-secondary"
+                      className="p-2 rounded-lg bg-secondary shadow-sm hover:shadow-md transition-all"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 + index * 0.1 }}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-info rounded-lg flex items-center justify-center text-invert text-xs font-bold flex-shrink-0">
+                      <div className="flex items-start gap-2">
+                        <div className="w-7 h-7 bg-info rounded-lg flex items-center justify-center text-invert text-xs font-bold flex-shrink-0">
                           {date.getDate()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-primary text-sm truncate">
+                          <p className="font-semibold text-primary text-xs truncate">
                             {candidate?.name}
                           </p>
                           <p className="text-xs text-muted">
                             {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                          <p className="text-xs text-muted mt-1">
-                            with {interview.interviewer}
                           </p>
                         </div>
                       </div>
@@ -267,67 +271,125 @@ export default function Dashboard() {
               </div>
 
               <Link href="/interviews">
-                <button className="w-full mt-4 btn btn-ghost text-sm">
+                <button className="w-full mt-3 btn btn-ghost text-xs py-1.5">
                   View All Interviews
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3 h-3" />
                 </button>
               </Link>
             </Card>
           </motion.div>
         </div>
 
-        {/* Roles Needing Attention */}
-        <motion.div
-          className="mt-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-warning/10 rounded-lg flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 text-warning" />
+        {/* Bottom Grid - AI Triage and Roles */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+          {/* AI Triage Queue */}
+          <motion.div
+            className="lg:col-span-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Card className="p-4 accent-border">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-snoonu-red/10 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 snoonu-red" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-primary">AI Triage Queue</h2>
+                    <p className="text-xs text-muted">Top candidates across all roles</p>
+                  </div>
+                </div>
+                <Link href="/applicants">
+                  <button className="btn btn-ghost text-xs">
+                    View All
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </Link>
+              </div>
+
+              <div className="space-y-2">
+                {topCandidateApps.slice(0, 4).map((app, index) => (
+                  <Link key={app.id} href={`/applicants/${app.id}`}>
+                    <motion.div
+                      className="flex items-center gap-3 p-2 rounded-lg bg-secondary shadow-sm hover:shadow-md hover:bg-tertiary transition-all cursor-pointer"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.7 + index * 0.1 }}
+                    >
+                    <div className="flex-shrink-0">
+                      <FitScoreRing score={app.fitScore} size="sm" showLabel={false} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <h3 className="font-semibold text-primary text-sm">{app.candidate.name}</h3>
+                      </div>
+                      <p className="text-xs text-muted truncate">{app.role.title}</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {app.aiReasons.slice(0, 2).map((reason, i) => (
+                          <span key={i} className="text-xs px-1.5 py-0.5 rounded-full bg-tertiary text-secondary">
+                            {reason}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted flex-shrink-0" />
+                  </motion.div>
+                  </Link>
+                ))}
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Roles Needing Attention */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-warning/10 rounded-lg flex items-center justify-center">
+                  <AlertCircle className="w-4 h-4 text-warning" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-primary">Roles Needing Attention</h2>
-                  <p className="text-sm text-muted">High volume or approaching deadline</p>
+                  <h2 className="text-base font-bold text-primary">Roles Needing Attention</h2>
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {roles.slice(0, 3).map((role, index) => {
-                const roleApps = applications.filter(a => a.roleId === role.id);
-                const unreviewedCount = roleApps.filter(a => a.stage === 'new').length;
-                
-                return (
-                  <motion.div
-                    key={role.id}
-                    className="p-4 rounded-lg bg-secondary hover:bg-tertiary transition-colors cursor-pointer"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.8 + index * 0.1 }}
-                  >
-                    <h3 className="font-semibold text-primary text-sm mb-2">{role.title}</h3>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted">{role.applicantsCount} applicants</span>
-                      {unreviewedCount > 0 && (
-                        <span className="badge badge-warning">{unreviewedCount} new</span>
-                      )}
-                    </div>
-                    <div className="mt-3 flex items-center gap-2">
-                      <Clock className="w-3 h-3 text-muted" />
-                      <span className="text-xs text-muted">
-                        Deadline: {new Date(role.deadline).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </Card>
-        </motion.div>
+              <div className="space-y-2">
+                {roles.slice(0, 3).map((role, index) => {
+                  const roleApps = applications.filter(a => a.roleId === role.id);
+                  const unreviewedCount = roleApps.filter(a => a.stage === 'new').length;
+                  
+                  return (
+                    <motion.div
+                      key={role.id}
+                      className="p-2 rounded-lg bg-secondary shadow-sm hover:shadow-md hover:bg-tertiary transition-all cursor-pointer"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8 + index * 0.1 }}
+                    >
+                      <h3 className="font-semibold text-primary text-xs mb-1">{role.title}</h3>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted">{role.applicantsCount} applicants</span>
+                        {unreviewedCount > 0 && (
+                          <span className="badge badge-warning text-xs py-0">{unreviewedCount} new</span>
+                        )}
+                      </div>
+                      <div className="mt-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-muted" />
+                        <span className="text-xs text-muted">
+                          {new Date(role.deadline).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </MainLayout>
   );

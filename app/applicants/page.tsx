@@ -7,6 +7,7 @@ import { Card, StatusPill, Button, FitScoreRing, SkillChip } from '@/components/
 import { applications, candidates, roles } from '@/lib/data/mock-data';
 import { useState, useMemo } from 'react';
 import { useToast } from '@/components/ui/Toast';
+import Link from 'next/link';
 
 type ViewMode = 'table' | 'card';
 
@@ -274,11 +275,18 @@ export default function ApplicantsPage() {
                 <Card 
                   className={`p-5 cursor-pointer ${selectedApps.has(app.id) ? 'ring-2 ring-snoonu-red' : ''}`}
                   hover
-                  onClick={() => toggleSelection(app.id)}
                 >
-                  <div className="flex items-start gap-4">
+                  <Link href={`/applicants/${app.id}`}>
+                    <div className="flex items-start gap-4">
                     {/* Checkbox */}
-                    <div className="flex-shrink-0 pt-1">
+                    <div 
+                      className="flex-shrink-0 pt-1"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleSelection(app.id);
+                      }}
+                    >
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                         selectedApps.has(app.id) 
                           ? 'bg-snoonu-red border-snoonu-red' 
@@ -343,6 +351,7 @@ export default function ApplicantsPage() {
                       </div>
                     </div>
                   </div>
+                  </Link>
                 </Card>
               ) : (
                 // Table view (compact)
@@ -350,14 +359,21 @@ export default function ApplicantsPage() {
                   className={`p-3 rounded-lg bg-card border border-default hover:border-hover transition-all cursor-pointer ${
                     selectedApps.has(app.id) ? 'ring-2 ring-snoonu-red' : ''
                   }`}
-                  onClick={() => toggleSelection(app.id)}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                      selectedApps.has(app.id) 
-                        ? 'bg-snoonu-red border-snoonu-red' 
-                        : 'border-default'
-                    }`}>
+                  <Link href={`/applicants/${app.id}`}>
+                    <div className="flex items-center gap-3">
+                    <div 
+                      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                        selectedApps.has(app.id) 
+                          ? 'bg-snoonu-red border-snoonu-red' 
+                          : 'border-default'
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleSelection(app.id);
+                      }}
+                    >
                       {selectedApps.has(app.id) && (
                         <CheckCircle2 className="w-3 h-3 text-white" />
                       )}
@@ -379,6 +395,7 @@ export default function ApplicantsPage() {
                       </div>
                     </div>
                   </div>
+                  </Link>
                 </div>
               )}
             </motion.div>
