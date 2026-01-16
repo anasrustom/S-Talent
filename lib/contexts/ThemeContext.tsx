@@ -19,22 +19,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setMounted(true);
     // Check for saved theme preference or default to 'dark' for hackathon vibe
-    const savedTheme = localStorage.getItem('snoonu-theme') as Theme;
-    if (savedTheme) {
-      setThemeState(savedTheme);
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('snoonu-theme') as Theme;
+      if (savedTheme) {
+        setThemeState(savedTheme);
+      }
     }
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
     
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.setAttribute('data-theme', 'dark');
-    } else {
-      root.removeAttribute('data-theme');
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+      } else {
+        root.removeAttribute('data-theme');
+      }
+      localStorage.setItem('snoonu-theme', theme);
     }
-    localStorage.setItem('snoonu-theme', theme);
   }, [theme, mounted]);
 
   const toggleTheme = () => {
@@ -44,11 +48,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
-
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>

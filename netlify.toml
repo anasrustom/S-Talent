@@ -7,14 +7,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
-
-# Redirect rules for Next.js
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false
-  conditions = {Role = ["admin"]}
+  NEXT_TELEMETRY_DISABLED = "1"
 
 # Headers for security and caching
 [[headers]]

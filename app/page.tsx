@@ -20,8 +20,10 @@ export default function Home() {
   const handleContinue = () => {
     if (selectedOrg && selectedRole) {
       // Store selections in localStorage for demo
-      localStorage.setItem('current-org', selectedOrg);
-      localStorage.setItem('current-role', selectedRole);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('current-org', selectedOrg);
+        localStorage.setItem('current-role', selectedRole);
+      }
       router.push('/dashboard');
     }
   };
