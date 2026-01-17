@@ -41,22 +41,23 @@ export default function InterviewsPage() {
 
   return (
     <MainLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-primary mb-2">Interviews</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Interviews</h1>
               <p className="text-secondary">{upcomingInterviews.length} scheduled this week</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button variant="secondary" onClick={() => setShowAutoSchedule(true)}>
                 <Sparkles className="w-5 h-5" />
-                Auto-Schedule
+                <span className="hidden sm:inline">Auto-Schedule</span>
+                <span className="sm:hidden">Auto</span>
               </Button>
               <Button variant="primary">
                 <Plus className="w-5 h-5" />

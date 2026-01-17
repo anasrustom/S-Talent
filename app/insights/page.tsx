@@ -22,14 +22,14 @@ const roleTypeData = [
 export default function InsightsPage() {
   return (
     <MainLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold text-primary mb-2">Insights</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Insights</h1>
           <p className="text-secondary">Analytics and performance metrics</p>
         </motion.div>
 

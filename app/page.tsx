@@ -54,7 +54,7 @@ export default function Home() {
             </div>
           </motion.div>
           <h1 className="text-3xl font-bold text-primary mb-2">
-            <span className="inline-block">Welcome to </span>
+            <span className="inline-block mr-2">Welcome to</span>
             <span className="gradient-text inline-block">S Talent</span>
           </h1>
           <p className="text-lg text-secondary">

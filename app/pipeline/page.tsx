@@ -226,7 +226,7 @@ export default function PipelinePage() {
 
   return (
     <MainLayout>
-      <div className="p-6 max-w-full overflow-x-auto">
+      <div className="max-w-full overflow-x-auto">
         {/* Header */}
         <motion.div
           className="mb-6"

@@ -120,14 +120,14 @@ export default function Dashboard() {
 
   return (
     <MainLayout>
-      <div className="p-4 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           className="mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-2xl font-bold text-primary mb-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-primary mb-1">
             <span className="gradient-text">Dashboard</span>
           </h1>
           <p className="text-sm text-secondary">Welcome back! Here's what's happening today.</p>

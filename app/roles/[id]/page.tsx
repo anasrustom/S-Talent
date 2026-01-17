@@ -53,7 +53,7 @@ export default function RoleDetailPage() {
 
   return (
     <MainLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <Link href="/roles">
           <motion.button

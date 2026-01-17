@@ -29,19 +29,19 @@ export default function RolesPage() {
 
   return (
     <MainLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-primary mb-2">Roles</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Roles</h1>
               <p className="text-secondary">{roles.length} active opportunities</p>
             </div>
-            <button className="btn btn-primary">
+            <button className="btn btn-primary w-full sm:w-auto">
               <Plus className="w-5 h-5" />
               Post New Role
             </button>
@@ -56,21 +56,21 @@ export default function RolesPage() {
           transition={{ delay: 0.1 }}
         >
           <Link href="/skillproof">
-            <Card hover className="p-6 bg-gradient-to-r from-snoonu-red/10 via-pink-500/10 to-purple-500/10 border-snoonu-red/30 accent-border cursor-pointer">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-snoonu-red to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <Sparkles className="w-8 h-8 text-white" />
+            <Card hover className="p-4 sm:p-6 bg-gradient-to-r from-snoonu-red/10 via-pink-500/10 to-purple-500/10 border-snoonu-red/30 accent-border cursor-pointer">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-snoonu-red to-pink-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                    <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h2 className="text-xl font-bold text-primary">SkillProof Challenges</h2>
+                      <h2 className="text-lg sm:text-xl font-bold text-primary">SkillProof Challenges</h2>
                       <span className="badge badge-primary text-xs">NEW</span>
                     </div>
-                    <p className="text-secondary mb-2">
+                    <p className="text-secondary mb-2 text-sm sm:text-base">
                       Filter candidates with practical skill assessments — beyond resumes
                     </p>
-                    <div className="flex items-center gap-4 text-sm">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm">
                       <div className="flex items-center gap-1.5">
                         <Code className="w-4 h-4 text-info" />
                         <span className="text-muted">Engineering</span>
@@ -90,8 +90,8 @@ export default function RolesPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button className="btn btn-primary">
+                <div className="flex items-center gap-2 w-full lg:w-auto">
+                  <button className="btn btn-primary w-full lg:w-auto">
                     Explore SkillProof
                     <ArrowRight className="w-5 h-5" />
                   </button>
@@ -121,7 +121,7 @@ export default function RolesPage() {
           </div>
 
           {/* Type Filter */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
             {[
               { value: 'all', label: 'All' },
               { value: 'internship', label: 'Internships' },

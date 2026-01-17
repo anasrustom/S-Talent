@@ -52,7 +52,7 @@ const skillProofCategories = [
 export default function SkillProofPage() {
   return (
     <MainLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div
           className="text-center mb-12"

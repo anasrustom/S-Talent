@@ -404,9 +404,66 @@ body {
   animation: spin 0.6s linear infinite;
 }
 
+/* Mobile Responsive Utilities */
+@media (max-width: 1024px) {
+  /* Adjust padding for tablets */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .card { border-radius: 8px; }
-  .btn { padding: 0.625rem 1rem; }
+  .card { 
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .btn { 
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Mobile text sizing */
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  h3 {
+    font-size: 1.125rem !important;
+  }
+  
+  /* Mobile spacing adjustments */
+  .space-y-6 > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Mobile-friendly tables */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Extra small mobile devices */
+  body {
+    font-size: 14px;
+  }
+  
+  /* Ensure cards stack properly */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Mobile-friendly modals */
+  .modal-content {
+    width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
 }
 
 /* Gradient text effect for headings */

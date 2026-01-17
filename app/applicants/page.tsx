@@ -79,16 +79,16 @@ export default function ApplicantsPage() {
 
   return (
     <MainLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-primary mb-2">Applicants</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Applicants</h1>
               <p className="text-secondary">{applications.length} total applications</p>
             </div>
             
