@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Sparkles, ArrowDownWideNarrow, Users, Grid, List, Download, Send, CheckCircle2, X, Calendar } from 'lucide-react';
+import { Search, Filter, Sparkles, ArrowDownWideNarrow, Users, Grid, List, Send, CheckCircle2, X, Calendar } from 'lucide-react';
 import { Card, StatusPill, Button, FitScoreRing, SkillChip } from '@/components/ui/common';
 import { applications, candidates, roles } from '@/lib/data/mock-data';
 import { useState, useMemo } from 'react';

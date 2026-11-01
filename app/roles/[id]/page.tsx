@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Calendar, Users, TrendingUp, ArrowLeft, Briefcase, Heart, GraduationCap, FileText, GitBranch, Target, CalendarDays, BarChart3 } from 'lucide-react';
+import { MapPin, Calendar, Users, ArrowLeft, Briefcase, Heart, GraduationCap, GitBranch, Target, CalendarDays, BarChart3 } from 'lucide-react';
 import { Card, StatusPill, Button, FitScoreRing, SkillChip } from '@/components/ui/common';
 import { roles, applications, candidates, roleStats } from '@/lib/data/mock-data';
 import { useState } from 'react';

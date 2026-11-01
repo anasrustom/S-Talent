@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { Search, Filter, Plus, MapPin, Calendar, Users, TrendingUp, Briefcase, Heart, GraduationCap, Sparkles, Code, Megaphone, Calculator, Palette, ArrowRight, Target } from 'lucide-react';
+import { Search, Filter, Plus, MapPin, Calendar, Users, TrendingUp, Briefcase, Heart, GraduationCap, Sparkles, Code, Megaphone, Calculator, Palette, ArrowRight } from 'lucide-react';
 import { Card, StatusPill } from '@/components/ui/common';
 import { roles, applications, roleStats } from '@/lib/data/mock-data';
 import { useState } from 'react';

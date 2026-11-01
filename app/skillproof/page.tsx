@@ -163,7 +163,7 @@ export default function SkillProofPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-primary">Prove ability even without experience</p>
-                      <p className="text-sm text-muted">Show what you can do, not just what you've done</p>
+                      <p className="text-sm text-muted">Show what you can do, not just what you&apos;ve done</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">

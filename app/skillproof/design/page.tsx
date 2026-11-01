@@ -2,11 +2,10 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { Palette, ArrowLeft, Send, Eye, Smartphone, Monitor, CheckCircle2, XCircle, Lightbulb, Target } from 'lucide-react';
+import { ArrowLeft, Send, Eye, Smartphone, CheckCircle2, Lightbulb, Target } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import Link from 'next/link';
 import { useState } from 'react';
-import Image from 'next/image';
 import { RubricResultCard } from '@/components/ui/RubricResultCard';
 import { RubricResult, scoreDesignCritique } from '@/lib/skillproof/rubric';
 

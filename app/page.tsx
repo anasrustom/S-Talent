@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Building2, ChevronRight, Shield, Users, Briefcase } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { organizations } from '@/lib/data/mock-data';
 import { useState } from 'react';
 
@@ -50,7 +51,7 @@ export default function Home() {
             transition={{ delay: 0.2, type: 'spring' }}
           >
             <div className="w-16 h-16 flex items-center justify-center shadow-lg">
-              <img src="/snoonu_logo.png" alt="Snoonu" className="w-16 h-16 object-contain" />
+              <Image src="/snoonu_logo.png" alt="Snoonu" width={64} height={64} className="w-16 h-16 object-contain" />
             </div>
           </motion.div>
           <h1 className="text-3xl font-bold text-primary mb-2">

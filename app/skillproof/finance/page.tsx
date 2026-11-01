@@ -2,10 +2,10 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { Calculator, ArrowLeft, TrendingUp, DollarSign, PieChart, BarChart3, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Calculator, ArrowLeft, TrendingUp, PieChart, BarChart3, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { RubricResultCard } from '@/components/ui/RubricResultCard';
 import { RubricResult, scoreBudgetAllocation } from '@/lib/skillproof/rubric';
 
@@ -30,19 +30,13 @@ const financeScenario = {
 
 export default function FinanceChallengePage() {
   const totalBudget = 50000;
-  const [allocations, setAllocations] = useState<{ [key: string]: number }>({});
+  // Every channel starts at zero
+  const [allocations, setAllocations] = useState<{ [key: string]: number }>(() =>
+    Object.fromEntries(financeScenario.channels.map(channel => [channel.name, 0]))
+  );
   const [reasoning, setReasoning] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [result, setResult] = useState<RubricResult | null>(null);
-
-  // Initialize allocations
-  useEffect(() => {
-    const initial: { [key: string]: number } = {};
-    financeScenario.channels.forEach(channel => {
-      initial[channel.name] = 0;
-    });
-    setAllocations(initial);
-  }, []);
 
   const allocatedTotal = Object.values(allocations).reduce((sum, val) => sum + val, 0);
   const remaining = totalBudget - allocatedTotal;

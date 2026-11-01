@@ -17,16 +17,18 @@ import {
   Command,
   Sparkles,
   Menu,
-  X
+  X,
+  type LucideIcon
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/lib/contexts/ThemeContext';
 import { useState, useEffect, useSyncExternalStore } from 'react';
 import { organizations, roles, applications, interviews } from '@/lib/data/mock-data';
 
 type NavItem = {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   href: string;
   badge?: number;
@@ -65,14 +67,11 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // The mobile menu stays open only on the page it was opened on, so navigating closes it
+  const [menuOpenedAt, setMenuOpenedAt] = useState<string | null>(null);
+  const isMobileMenuOpen = menuOpenedAt === pathname;
   const storedOrgId = useSyncExternalStore(subscribeToStorage, readStoredOrgId, () => null);
   const orgName = organizations.find(o => o.id === storedOrgId)?.name ?? currentOrg;
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -96,7 +95,7 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={() => setMenuOpenedAt(null)}
           />
         )}
       </AnimatePresence>
@@ -114,7 +113,7 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center">
-                <img src="/snoonu_logo.png" alt="Snoonu" className="w-10 h-10 object-contain" />
+                <Image src="/snoonu_logo.png" alt="Snoonu" width={40} height={40} className="w-10 h-10 object-contain" />
               </div>
               <div>
                 <h1 className="text-base font-bold text-primary">S-Talent</h1>
@@ -123,7 +122,7 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
             </div>
             {/* Close button for mobile */}
             <button
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => setMenuOpenedAt(null)}
               className="lg:hidden p-2 hover:bg-tertiary rounded-lg transition-colors"
             >
               <X className="w-5 h-5 text-secondary" />
@@ -212,7 +211,7 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
         >
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMobileMenuOpen(true)}
+            onClick={() => setMenuOpenedAt(pathname)}
             className="lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
           >
             <Menu className="w-6 h-6 text-secondary" />

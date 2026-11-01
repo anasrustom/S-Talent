@@ -2,23 +2,18 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Users, Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, AlertCircle, Brain, Zap, Target } from 'lucide-react';
+import { type LucideIcon, TrendingUp, TrendingDown, Users, Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import { applications, roles, interviews, candidates } from '@/lib/data/mock-data';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FitScoreRing } from '@/components/ui/common';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 function AnimatedCounter({ value, duration = 2000 }: { value: number; duration?: number }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (value === 0) {
-      setCount(0);
-      return;
-    }
-
     let startTime: number;
     let animationFrame: number;
 
@@ -50,7 +45,7 @@ type KPICardProps = {
   title: string;
   value: number;
   change?: { value: number; positive: boolean };
-  icon: any;
+  icon: LucideIcon;
   delay: number;
 };
 
@@ -130,7 +125,7 @@ export default function Dashboard() {
           <h1 className="text-xl sm:text-2xl font-bold text-primary mb-1">
             <span className="gradient-text">Dashboard</span>
           </h1>
-          <p className="text-sm text-secondary">Welcome back! Here's what's happening today.</p>
+          <p className="text-sm text-secondary">Welcome back! Here&apos;s what&apos;s happening today.</p>
         </motion.div>
 
         {/* KPI Cards */}

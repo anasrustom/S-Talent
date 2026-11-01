@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { Megaphone, ArrowLeft, Send, Sparkles, Target, TrendingUp, Users, Calendar, Instagram, Twitter, Facebook, Linkedin, CheckCircle2 } from 'lucide-react';
+import { Megaphone, ArrowLeft, Send, Sparkles, Target, Calendar, Instagram, Twitter, CheckCircle2 } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import Link from 'next/link';
 import { useState } from 'react';
