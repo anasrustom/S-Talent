@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/common';
 import Link from 'next/link';
 import { useState } from 'react';
 import Image from 'next/image';
+import { RubricResultCard } from '@/components/ui/RubricResultCard';
+import { RubricResult, scoreDesignCritique } from '@/lib/skillproof/rubric';
 
 const designBrief = {
   title: 'E-commerce Checkout Flow Critique',
@@ -47,7 +49,7 @@ export default function DesignChallengePage() {
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
+  const [result, setResult] = useState<RubricResult | null>(null);
 
   const handleAnswerChange = (questionId: number, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
@@ -55,9 +57,7 @@ export default function DesignChallengePage() {
 
   const handleSubmit = () => {
     setIsSubmitted(true);
-    setTimeout(() => {
-      setScore(89);
-    }, 1500);
+    setResult(scoreDesignCritique(answers));
   };
 
   const allAnswered = designBrief.questions.every(q => answers[q.id]?.trim().length > 50);
@@ -93,14 +93,14 @@ export default function DesignChallengePage() {
                 {showAnnotations ? 'Hide' : 'Show'} Issues
               </button>
               <button 
-                className={`btn ${isSubmitted && score ? 'btn-success' : 'btn-primary'}`}
+                className={`btn ${result ? 'btn-success' : 'btn-primary'}`}
                 onClick={handleSubmit}
                 disabled={!allAnswered || isSubmitted}
               >
-                {isSubmitted && score ? (
+                {result ? (
                   <>
                     <CheckCircle2 className="w-5 h-5" />
-                    Score: {score}/100
+                    Rubric: {result.score}/100
                   </>
                 ) : (
                   <>
@@ -327,44 +327,7 @@ export default function DesignChallengePage() {
               ))}
 
               {/* Evaluation feedback */}
-              {isSubmitted && score && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                >
-                  <Card className="p-6 bg-gradient-to-br from-success/10 to-transparent border-success/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
-                        <CheckCircle2 className="w-6 h-6 text-success" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-success">Excellent Analysis!</h3>
-                        <p className="text-sm text-muted">Sample rubric score: {score}/100</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="p-3 rounded-lg bg-success/5">
-                        <h4 className="font-semibold text-primary text-sm mb-2">Key Strengths:</h4>
-                        <ul className="space-y-1 text-sm text-secondary">
-                          <li>✓ Identified critical accessibility issues</li>
-                          <li>✓ Provided specific, actionable recommendations</li>
-                          <li>✓ Demonstrated understanding of mobile UX principles</li>
-                          <li>✓ Considered user flow and friction points</li>
-                        </ul>
-                      </div>
-                      
-                      <div className="p-3 rounded-lg bg-info/5">
-                        <h4 className="font-semibold text-primary text-sm mb-2">Additional Insights:</h4>
-                        <p className="text-sm text-secondary">
-                          Your critique shows strong attention to detail. Consider exploring error states 
-                          and edge cases in future reviews to provide even more comprehensive feedback.
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              )}
+              {result && <RubricResultCard result={result} />}
 
               {/* Progress Indicator */}
               {!isSubmitted && (

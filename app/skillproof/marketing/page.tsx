@@ -6,6 +6,8 @@ import { Megaphone, ArrowLeft, Send, Sparkles, Target, TrendingUp, Users, Calend
 import { Card } from '@/components/ui/common';
 import Link from 'next/link';
 import { useState } from 'react';
+import { RubricResultCard } from '@/components/ui/RubricResultCard';
+import { RubricResult, scoreMarketingCampaign } from '@/lib/skillproof/rubric';
 
 const marketingBrief = {
   title: 'Social Media Campaign Launch',
@@ -31,14 +33,11 @@ export default function MarketingChallengePage() {
   const [hashtag, setHashtag] = useState('');
   const [strategy, setStrategy] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
+  const [result, setResult] = useState<RubricResult | null>(null);
 
   const handleSubmit = () => {
     setIsSubmitted(true);
-    // Demo: shows a sample rubric result after submission
-    setTimeout(() => {
-      setScore(87);
-    }, 1500);
+    setResult(scoreMarketingCampaign({ caption: instagramCaption, tweet: twitterPost, hashtag, strategy }));
   };
 
   const isComplete = instagramCaption && twitterPost && hashtag && strategy;
@@ -66,14 +65,14 @@ export default function MarketingChallengePage() {
             </div>
             
             <button 
-              className={`btn ${isSubmitted && score ? 'btn-success' : 'btn-primary'}`}
+              className={`btn ${result ? 'btn-success' : 'btn-primary'}`}
               onClick={handleSubmit}
               disabled={!isComplete || isSubmitted}
             >
-              {isSubmitted && score ? (
+              {result ? (
                 <>
                   <CheckCircle2 className="w-5 h-5" />
-                  Score: {score}/100
+                  Rubric: {result.score}/100
                 </>
               ) : (
                 <>
@@ -167,44 +166,8 @@ export default function MarketingChallengePage() {
                 </Card>
               </motion.div>
 
-              {/* Evaluation feedback */}
-              {isSubmitted && score && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                >
-                  <Card className="p-6 bg-gradient-to-br from-success/10 to-transparent border-success/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
-                        <TrendingUp className="w-6 h-6 text-success" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-success">Evaluation complete</h3>
-                        <p className="text-sm text-muted">Sample rubric score: {score}/100</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="p-3 rounded-lg bg-success/5">
-                        <h4 className="font-semibold text-primary text-sm mb-1">Strengths</h4>
-                        <p className="text-sm text-secondary">
-                          ✓ Engaging tone that resonates with target audience<br />
-                          ✓ Clear value proposition in social copy<br />
-                          ✓ Strategic use of trending formats
-                        </p>
-                      </div>
-                      
-                      <div className="p-3 rounded-lg bg-warning/5">
-                        <h4 className="font-semibold text-primary text-sm mb-1">Areas for Improvement</h4>
-                        <p className="text-sm text-secondary">
-                          • Consider adding more specific call-to-action<br />
-                          • Hashtag could be more unique to campaign
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              )}
+              {/* Rubric result */}
+              {result && <RubricResultCard result={result} />}
             </div>
 
             {/* Right Panel - Content Creation */}

@@ -6,6 +6,8 @@ import { Calculator, ArrowLeft, TrendingUp, DollarSign, PieChart, BarChart3, Che
 import { Card } from '@/components/ui/common';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { RubricResultCard } from '@/components/ui/RubricResultCard';
+import { RubricResult, scoreBudgetAllocation } from '@/lib/skillproof/rubric';
 
 const financeScenario = {
   title: 'Marketing Budget Optimization',
@@ -31,7 +33,7 @@ export default function FinanceChallengePage() {
   const [allocations, setAllocations] = useState<{ [key: string]: number }>({});
   const [reasoning, setReasoning] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
+  const [result, setResult] = useState<RubricResult | null>(null);
 
   // Initialize allocations
   useEffect(() => {
@@ -64,8 +66,6 @@ export default function FinanceChallengePage() {
   const estimatedCustomers = Math.floor(totalExpectedReturn / 100); // Assume $100 per customer
   const actualCAC = estimatedCustomers > 0 ? allocatedTotal / estimatedCustomers : 0;
 
-  const meetsGoals = estimatedCustomers >= 500 && actualCAC <= 100;
-
   const handleAllocationChange = (channel: string, value: string) => {
     const numValue = parseInt(value) || 0;
     setAllocations(prev => ({ ...prev, [channel]: numValue }));
@@ -73,9 +73,14 @@ export default function FinanceChallengePage() {
 
   const handleSubmit = () => {
     setIsSubmitted(true);
-    setTimeout(() => {
-      setScore(meetsGoals ? 92 : 78);
-    }, 1500);
+    setResult(scoreBudgetAllocation({
+      channels: financeScenario.channels,
+      allocations,
+      totalBudget,
+      estimatedCustomers,
+      actualCAC,
+      reasoning,
+    }));
   };
 
   const canSubmit = allocatedTotal === totalBudget && reasoning.trim().length > 50;
@@ -103,14 +108,14 @@ export default function FinanceChallengePage() {
             </div>
             
             <button 
-              className={`btn ${isSubmitted && score ? 'btn-success' : 'btn-primary'}`}
+              className={`btn ${result ? 'btn-success' : 'btn-primary'}`}
               onClick={handleSubmit}
               disabled={!canSubmit || isSubmitted}
             >
-              {isSubmitted && score ? (
+              {result ? (
                 <>
                   <CheckCircle2 className="w-5 h-5" />
-                  Score: {score}/100
+                  Rubric: {result.score}/100
                 </>
               ) : (
                 <>
@@ -357,29 +362,7 @@ export default function FinanceChallengePage() {
                 </Card>
               </motion.div>
 
-              {isSubmitted && score && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                >
-                  <Card className="p-6 bg-gradient-to-br from-success/10 to-transparent border-success/30">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
-                        <DollarSign className="w-5 h-5 text-success" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-success">Analysis Complete</h3>
-                        <p className="text-sm text-muted">Score: {score}/100</p>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      <p className="text-secondary">
-                        <strong className="text-primary">Evaluation:</strong> {meetsGoals ? 'Strong allocation strategy that meets all targets.' : 'Good effort, but consider adjusting allocation to meet all goals.'}
-                      </p>
-                    </div>
-                  </Card>
-                </motion.div>
-              )}
+              {result && <RubricResultCard result={result} />}
             </div>
           </div>
         </div>
