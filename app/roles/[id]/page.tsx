@@ -4,7 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, Users, TrendingUp, ArrowLeft, Briefcase, Heart, GraduationCap, FileText, GitBranch, Target, CalendarDays, BarChart3 } from 'lucide-react';
 import { Card, StatusPill, Button, FitScoreRing, SkillChip } from '@/components/ui/common';
-import { roles, applications, candidates } from '@/lib/data/mock-data';
+import { roles, applications, candidates, roleStats } from '@/lib/data/mock-data';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -16,6 +16,12 @@ const tabs = [
   { id: 'interviews', label: 'Interviews', icon: CalendarDays },
   { id: 'insights', label: 'Insights', icon: BarChart3 },
 ];
+
+const roleIcons = {
+  internship: Briefcase,
+  volunteer: Heart,
+  graduate: GraduationCap,
+};
 
 export default function RoleDetailPage() {
   const params = useParams();
@@ -39,16 +45,17 @@ export default function RoleDetailPage() {
     candidate: candidates.find(c => c.id === app.candidateId)!,
   }));
 
-  const getRoleIcon = (type: string) => {
-    switch (type) {
-      case 'internship': return Briefcase;
-      case 'volunteer': return Heart;
-      case 'graduate': return GraduationCap;
-      default: return Briefcase;
-    }
-  };
+  const stats = roleStats(role.id);
 
-  const Icon = getRoleIcon(role.type);
+  // The requirement most applicants have not shown, read from the score breakdowns
+  const mostMissed = role.requirements
+    .map(req => ({
+      req,
+      missing: roleApps.filter(a => a.scoreBreakdown.some(line => line.label === `${req} not shown`)).length,
+    }))
+    .sort((a, b) => b.missing - a.missing)[0];
+
+  const Icon = roleIcons[role.type];
   const daysUntilDeadline = Math.ceil((new Date(role.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
   return (
@@ -123,7 +130,7 @@ export default function RoleDetailPage() {
                 <div className="text-center">
                   <div className="w-20 h-20 rounded-xl bg-secondary flex items-center justify-center mb-2">
                     <div>
-                      <p className="text-2xl font-bold text-primary">{role.applicantsCount}</p>
+                      <p className="text-2xl font-bold text-primary">{stats.applicants}</p>
                       <p className="text-xs text-muted">Applicants</p>
                     </div>
                   </div>
@@ -131,8 +138,8 @@ export default function RoleDetailPage() {
                 <div className="text-center">
                   <div className="w-20 h-20 rounded-xl bg-secondary flex items-center justify-center mb-2">
                     <div>
-                      <p className="text-2xl font-bold text-primary">{role.qualityScore}%</p>
-                      <p className="text-xs text-muted">Quality</p>
+                      <p className="text-2xl font-bold text-primary">{stats.avgFitScore}</p>
+                      <p className="text-xs text-muted">Avg. fit</p>
                     </div>
                   </div>
                 </div>
@@ -313,16 +320,21 @@ export default function RoleDetailPage() {
                 <h2 className="text-xl font-bold text-primary mb-4">Role Insights</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="p-4 rounded-lg bg-secondary">
-                    <p className="text-sm text-muted mb-1">Avg. Time to Shortlist</p>
-                    <p className="text-2xl font-bold text-primary">2.3 days</p>
-                  </div>
-                  <div className="p-4 rounded-lg bg-secondary">
-                    <p className="text-sm text-muted mb-1">Application Rate</p>
-                    <p className="text-2xl font-bold text-primary">+15%</p>
-                  </div>
-                  <div className="p-4 rounded-lg bg-secondary">
                     <p className="text-sm text-muted mb-1">Avg. Fit Score</p>
-                    <p className="text-2xl font-bold text-primary">76</p>
+                    <p className="text-2xl font-bold text-primary">{stats.avgFitScore}</p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-secondary">
+                    <p className="text-sm text-muted mb-1">Recommended to Accept</p>
+                    <p className="text-2xl font-bold text-primary">{stats.recommendedCount} of {stats.applicants}</p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-secondary">
+                    <p className="text-sm text-muted mb-1">Most Missed Requirement</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {mostMissed && mostMissed.missing > 0 ? mostMissed.req : 'None'}
+                    </p>
+                    {mostMissed && mostMissed.missing > 0 && (
+                      <p className="text-xs text-muted mt-1">{mostMissed.missing} of {stats.applicants} applicants have not shown it</p>
+                    )}
                   </div>
                 </div>
               </Card>

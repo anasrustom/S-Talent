@@ -82,8 +82,6 @@ export const roles: Role[] = [
     status: 'open',
     requirements: ['Python', 'Machine Learning', 'Research Experience'],
     description: 'Work on cutting-edge AI research projects at Qatar Foundation Research Institute',
-    applicantsCount: 47,
-    qualityScore: 78,
     challengeTemplateId: 'tpl-2',
     createdAt: '2026-01-01T10:00:00Z',
   },
@@ -98,8 +96,6 @@ export const roles: Role[] = [
     requirements: ['Event Management', 'Sustainability Interest', 'Volunteer Coordination'],
     languages: ['Arabic', 'English'],
     description: 'Support the annual Qatar Sustainability Summit logistics and attendee experience',
-    applicantsCount: 89,
-    qualityScore: 82,
     challengeTemplateId: 'tpl-1',
     createdAt: '2026-01-03T08:00:00Z',
   },
@@ -114,8 +110,6 @@ export const roles: Role[] = [
     requirements: ['Event Planning', 'Project Management', 'Communication'],
     languages: ['Arabic', 'English'],
     description: 'Full-time graduate role managing corporate and public events',
-    applicantsCount: 34,
-    qualityScore: 85,
     challengeTemplateId: 'tpl-1',
     createdAt: '2026-01-05T12:00:00Z',
   },
@@ -129,8 +123,6 @@ export const roles: Role[] = [
     status: 'open',
     requirements: ['React', 'Node.js', 'TypeScript'],
     description: 'Build innovative web applications at a fast-growing startup',
-    applicantsCount: 67,
-    qualityScore: 73,
     challengeTemplateId: 'tpl-2',
     createdAt: '2026-01-07T09:00:00Z',
   },
@@ -144,8 +136,6 @@ export const roles: Role[] = [
     status: 'open',
     requirements: ['Social Media', 'Content Creation', 'Analytics'],
     description: 'Drive digital marketing campaigns for major events',
-    applicantsCount: 52,
-    qualityScore: 79,
     challengeTemplateId: 'tpl-3',
     createdAt: '2026-01-08T11:00:00Z',
   },
@@ -160,8 +150,6 @@ export const roles: Role[] = [
     requirements: ['Teaching', 'Mentoring', 'Curriculum Design'],
     languages: ['Arabic', 'English'],
     description: 'Support educational outreach programs for local schools',
-    applicantsCount: 41,
-    qualityScore: 88,
     createdAt: '2026-01-10T10:00:00Z',
   },
 ];
@@ -591,6 +579,19 @@ export const applications: Application[] = [];
     notes: [],
   }));
 });
+
+// Per-role numbers, always counted from the applications above
+export function roleStats(roleId: string) {
+  const roleApps = applications.filter(a => a.roleId === roleId);
+  const avgFitScore = roleApps.length > 0
+    ? Math.round(roleApps.reduce((sum, a) => sum + a.fitScore, 0) / roleApps.length)
+    : 0;
+  return {
+    applicants: roleApps.length,
+    avgFitScore,
+    recommendedCount: roleApps.filter(a => a.recommendation === 'accept').length,
+  };
+}
 
 // Interviews
 export const interviews: Interview[] = [

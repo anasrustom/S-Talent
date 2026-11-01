@@ -4,7 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
 import { Search, Filter, Plus, MapPin, Calendar, Users, TrendingUp, Briefcase, Heart, GraduationCap, Sparkles, Code, Megaphone, Calculator, Palette, ArrowRight, Target } from 'lucide-react';
 import { Card, StatusPill } from '@/components/ui/common';
-import { roles, applications } from '@/lib/data/mock-data';
+import { roles, applications, roleStats } from '@/lib/data/mock-data';
 import { useState } from 'react';
 import Link from 'next/link';
 
@@ -201,14 +201,14 @@ export default function RolesPage() {
                           <Users className="w-4 h-4 text-muted" />
                           <span className="text-xs text-muted">Applicants</span>
                         </div>
-                        <p className="text-lg font-bold text-primary">{role.applicantsCount}</p>
+                        <p className="text-lg font-bold text-primary">{roleApps.length}</p>
                       </div>
                       <div className="p-3 rounded-lg bg-secondary">
                         <div className="flex items-center gap-2 mb-1">
                           <TrendingUp className="w-4 h-4 text-muted" />
-                          <span className="text-xs text-muted">Quality</span>
+                          <span className="text-xs text-muted">Avg. fit</span>
                         </div>
-                        <p className="text-lg font-bold text-primary">{role.qualityScore}%</p>
+                        <p className="text-lg font-bold text-primary">{roleStats(role.id).avgFitScore}</p>
                       </div>
                     </div>
 

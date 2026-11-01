@@ -372,7 +372,7 @@ export default function Dashboard() {
                     >
                       <h3 className="font-semibold text-primary text-xs mb-1">{role.title}</h3>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted">{role.applicantsCount} applicants</span>
+                        <span className="text-muted">{roleApps.length} applicants</span>
                         {unreviewedCount > 0 && (
                           <span className="badge badge-warning text-xs py-0">{unreviewedCount} new</span>
                         )}

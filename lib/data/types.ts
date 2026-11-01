@@ -33,8 +33,6 @@ export type Role = {
   requirements: string[];
   languages?: string[]; // languages the role requires, if any
   description: string;
-  applicantsCount: number;
-  qualityScore: number; // 0-100
   challengeTemplateId?: string;
   createdAt: string;
 };
