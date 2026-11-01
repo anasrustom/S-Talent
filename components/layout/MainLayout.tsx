@@ -8,7 +8,6 @@ import {
   GitBranch, 
   Calendar,
   BarChart3,
-  Settings,
   Building2,
   Sun,
   Moon,
@@ -23,7 +22,8 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/lib/contexts/ThemeContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
+import { organizations, roles, applications, interviews } from '@/lib/data/mock-data';
 
 type NavItem = {
   icon: any;
@@ -34,14 +34,27 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: Briefcase, label: 'Roles', href: '/roles', badge: 6 },
-  { icon: Users, label: 'Applicants', href: '/applicants', badge: 89 },
+  { icon: Briefcase, label: 'Roles', href: '/roles', badge: roles.filter(r => r.status === 'open').length },
+  { icon: Users, label: 'Applicants', href: '/applicants', badge: applications.length },
   { icon: Sparkles, label: 'SkillProof', href: '/skillproof' },
   { icon: GitBranch, label: 'Pipeline', href: '/pipeline' },
-  { icon: Calendar, label: 'Interviews', href: '/interviews', badge: 3 },
+  { icon: Calendar, label: 'Interviews', href: '/interviews', badge: interviews.filter(i => i.status === 'scheduled').length },
   { icon: BarChart3, label: 'Insights', href: '/insights' },
-  { icon: Settings, label: 'Settings', href: '/settings' },
 ];
+
+// The org picker on the landing page stores the chosen org id as 'current-org'
+function subscribeToStorage(callback: () => void) {
+  window.addEventListener('storage', callback);
+  return () => window.removeEventListener('storage', callback);
+}
+
+function readStoredOrgId(): string | null {
+  try {
+    return localStorage.getItem('current-org');
+  } catch {
+    return null;
+  }
+}
 
 type MainLayoutProps = {
   children: React.ReactNode;
@@ -53,6 +66,8 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
   const { theme, toggleTheme } = useTheme();
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const storedOrgId = useSyncExternalStore(subscribeToStorage, readStoredOrgId, () => null);
+  const orgName = organizations.find(o => o.id === storedOrgId)?.name ?? currentOrg;
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -118,13 +133,13 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
 
         {/* Org Selector */}
         <div className="p-4 border-b border-default">
-          <button className="w-full flex items-center justify-between p-3 rounded-lg bg-tertiary hover:bg-card border border-default transition-all group">
+          <Link href="/" className="w-full flex items-center justify-between p-3 rounded-lg bg-tertiary hover:bg-card border border-default transition-all group">
             <div className="flex items-center gap-2">
               <Building2 className="w-4 h-4 text-muted" />
-              <span className="text-sm font-medium text-primary truncate">{currentOrg}</span>
+              <span className="text-sm font-medium text-primary truncate">{orgName}</span>
             </div>
             <ChevronRight className="w-4 h-4 text-muted group-hover:text-primary transition-colors" />
-          </button>
+          </Link>
         </div>
 
         {/* Navigation */}
@@ -291,10 +306,6 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
         </motion.div>
       )}
 
-      {/* Demo Mode Badge */}
-      <div className="fixed bottom-4 right-4 px-3 py-1.5 bg-snoonu-red text-white text-xs font-semibold rounded-lg shadow-lg backdrop-blur-sm z-40">
-        🎭 DEMO MODE
-      </div>
     </div>
   );
 }
