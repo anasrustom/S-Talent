@@ -2,9 +2,10 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { type LucideIcon, TrendingUp, TrendingDown, Users, Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
+import { type LucideIcon, Users, Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import { applications, roles, interviews, candidates } from '@/lib/data/mock-data';
+import type { ApplicationStage } from '@/lib/data/types';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FitScoreRing } from '@/components/ui/common';
@@ -44,12 +45,12 @@ function AnimatedCounter({ value, duration = 2000 }: { value: number; duration?:
 type KPICardProps = {
   title: string;
   value: number;
-  change?: { value: number; positive: boolean };
+  note?: string;
   icon: LucideIcon;
   delay: number;
 };
 
-function KPICard({ title, value, change, icon: Icon, delay }: KPICardProps) {
+function KPICard({ title, value, note, icon: Icon, delay }: KPICardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -63,19 +64,7 @@ function KPICard({ title, value, change, icon: Icon, delay }: KPICardProps) {
             <p className="text-3xl font-bold text-primary">
               <AnimatedCounter value={value} />
             </p>
-            {change && (
-              <div className="flex items-center gap-1 mt-2">
-                {change.positive ? (
-                  <TrendingUp className="w-4 h-4 text-success" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-error" />
-                )}
-                <span className={`text-sm font-medium ${change.positive ? 'text-success' : 'text-error'}`}>
-                  {change.value}%
-                </span>
-                <span className="text-xs text-muted">vs last week</span>
-              </div>
-            )}
+            {note && <p className="text-xs text-muted mt-2">{note}</p>}
           </div>
           <div className="w-12 h-12 bg-snoonu-red/10 rounded-xl flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-snoonu-red/20 to-transparent"></div>
@@ -88,20 +77,28 @@ function KPICard({ title, value, change, icon: Icon, delay }: KPICardProps) {
 }
 
 export default function Dashboard() {
-  // Calculate stats
+  // Every number below is counted from the demo data in lib/data
   const openRoles = roles.filter(r => r.status === 'open').length;
-  const newAppsToday = 25; // Base number for demo
+  const totalApplications = applications.length;
+  const newApplications = applications.filter(a => a.stage === 'new').length;
   const shortlistedCount = applications.filter(a => a.stage === 'shortlisted').length;
-  const upcomingInterviews = interviews.filter(i => i.status === 'scheduled').length;
+  const scheduledInterviews = interviews.filter(i => i.status === 'scheduled').length;
 
-  // Application pipeline flow data
-  const pipelineData = [
-    { stage: 'Applied', count: 272 },
-    { stage: 'Screening', count: 145 },
-    { stage: 'Interview', count: 67 },
-    { stage: 'Offer', count: 23 },
-    { stage: 'Hired', count: 15 },
+  // Funnel: how many applications reached each stage or a later one
+  const funnelStages: { stage: ApplicationStage; label: string }[] = [
+    { stage: 'new', label: 'Applied' },
+    { stage: 'reviewed', label: 'Reviewed' },
+    { stage: 'shortlisted', label: 'Shortlisted' },
+    { stage: 'interview', label: 'Interview' },
+    { stage: 'offer', label: 'Offer' },
+    { stage: 'hired', label: 'Hired' },
   ];
+  const stageRank = (stage: ApplicationStage) => funnelStages.findIndex(s => s.stage === stage);
+  const pipelineData = funnelStages.map((s, index) => ({
+    stage: s.label,
+    // Rejected applications count as applied only
+    count: index === 0 ? totalApplications : applications.filter(a => stageRank(a.stage) >= index).length,
+  }));
 
   // Top candidates by fit score (copy first so the shared array keeps its order)
   const topCandidateApps = [...applications]
@@ -112,6 +109,15 @@ export default function Dashboard() {
       candidate: candidates.find(c => c.id === app.candidateId)!,
       role: roles.find(r => r.id === app.roleId)!,
     }));
+
+  // Roles with the most unreviewed applications first
+  const rolesNeedingAttention = roles
+    .map(role => {
+      const roleApps = applications.filter(a => a.roleId === role.id);
+      return { role, roleApps, unreviewedCount: roleApps.filter(a => a.stage === 'new').length };
+    })
+    .sort((a, b) => b.unreviewedCount - a.unreviewedCount)
+    .slice(0, 3);
 
   return (
     <MainLayout>
@@ -133,28 +139,25 @@ export default function Dashboard() {
           <KPICard
             title="Open Roles"
             value={openRoles}
-            change={{ value: 12, positive: true }}
             icon={Users}
             delay={0}
           />
           <KPICard
-            title="New Applications Today"
-            value={newAppsToday}
-            change={{ value: 8, positive: true }}
+            title="Applications"
+            value={totalApplications}
+            note={`${newApplications} not yet reviewed`}
             icon={CheckCircle2}
             delay={0.1}
           />
           <KPICard
             title="Shortlisted"
             value={shortlistedCount}
-            change={{ value: 15, positive: true }}
             icon={CheckCircle2}
             delay={0.2}
           />
           <KPICard
-            title="Interviews This Week"
-            value={upcomingInterviews}
-            change={{ value: 0, positive: true }}
+            title="Interviews Scheduled"
+            value={scheduledInterviews}
             icon={Calendar}
             delay={0.3}
           />
@@ -173,7 +176,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h2 className="text-lg font-bold text-primary">Hiring Pipeline Overview</h2>
-                  <p className="text-xs text-muted">Candidate flow across all roles</p>
+                  <p className="text-xs text-muted">Applications that reached each stage, all roles</p>
                 </div>
               </div>
               
@@ -229,7 +232,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h2 className="text-base font-bold text-primary">Upcoming Interviews</h2>
-                  <p className="text-xs text-muted">This week</p>
+                  <p className="text-xs text-muted">Scheduled</p>
                 </div>
               </div>
 
@@ -353,9 +356,7 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-2">
-                {roles.slice(0, 3).map((role, index) => {
-                  const roleApps = applications.filter(a => a.roleId === role.id);
-                  const unreviewedCount = roleApps.filter(a => a.stage === 'new').length;
+                {rolesNeedingAttention.map(({ role, roleApps, unreviewedCount }, index) => {
                   
                   return (
                     <motion.div
