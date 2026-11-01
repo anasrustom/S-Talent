@@ -117,7 +117,7 @@ export function MainLayout({ children, currentOrg = 'Qatar Foundation' }: MainLa
                 <img src="/snoonu_logo.png" alt="Snoonu" className="w-10 h-10 object-contain" />
               </div>
               <div>
-                <h1 className="text-base font-bold text-primary">S Talent</h1>
+                <h1 className="text-base font-bold text-primary">S-Talent</h1>
                 <p className="text-xs text-muted">Org Console</p>
               </div>
             </div>

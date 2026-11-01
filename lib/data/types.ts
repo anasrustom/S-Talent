@@ -1,4 +1,4 @@
-// Core data types for S Talent Console
+// Core data types for S-Talent Console
 
 export type Organization = {
   id: string;

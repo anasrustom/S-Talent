@@ -424,12 +424,9 @@ export default function EngineeringChallengePage() {
                               <div className="flex-1">
                                 <h3 className="font-bold text-success text-lg mb-1">Congratulations!</h3>
                                 <p className="text-sm text-secondary">
-                                  All test cases passed. Your solution is correct!
+                                  All test cases passed in {Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, '0')}. Your solution is correct!
                                 </p>
                               </div>
-                              <button className="btn btn-success">
-                                Submit Solution
-                              </button>
                             </div>
                           </Card>
                         </motion.div>

@@ -55,7 +55,7 @@ export default function Home() {
           </motion.div>
           <h1 className="text-3xl font-bold text-primary mb-2">
             <span className="inline-block mr-2">Welcome to</span>
-            <span className="gradient-text inline-block">S Talent</span>
+            <span className="gradient-text inline-block">S-Talent</span>
           </h1>
           <p className="text-lg text-secondary">
             Org Console — Manage Your Talent Pipeline
@@ -187,7 +187,7 @@ export default function Home() {
 
         {/* Footer */}
         <p className="text-center text-xs text-muted mt-8">
-          S Talent Console • Powered by Snoonu • Hackathon Demo
+          S-Talent Console • Built at the Snoonu Hackathon • Demo data
         </p>
       </motion.div>
     </div>
