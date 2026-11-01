@@ -77,7 +77,6 @@ export type Application = {
   scoreBreakdown: ScoreLine[];
   fitReasons: string[];
   recommendation: 'accept' | 'reject' | 'hold';
-  confidence: number; // 0-100
   notes: { text: string; author: string; createdAt: string }[];
   skillProofSubmission?: {
     challengeId: string;

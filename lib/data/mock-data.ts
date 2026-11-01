@@ -515,7 +515,6 @@ function buildApplication(candidate: Candidate, role: Role, fields: ApplicationF
     scoreBreakdown,
     fitReasons: buildFitReasons(candidate, role),
     recommendation: recommendationFor(fitScore),
-    confidence: Math.floor(fitScore * 0.9),
   };
 }
 

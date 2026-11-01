@@ -171,7 +171,7 @@ export default function ApplicantDetailPage() {
                 }`}>
                   {application.recommendation.toUpperCase()}
                 </p>
-                <p className="text-xs text-muted">{application.confidence}% confidence</p>
+                <p className="text-xs text-muted">Fit {application.fitScore}/100 · accept above 75, hold above 60</p>
               </div>
 
               {/* Stage */}
@@ -191,7 +191,7 @@ export default function ApplicantDetailPage() {
 
             {/* Fit Reasons */}
             <div className="mt-6 pt-6 border-t border-border">
-              <h3 className="text-sm font-semibold text-muted mb-3">Why This Candidate Stands Out</h3>
+              <h3 className="text-sm font-semibold text-muted mb-3">Fit signals</h3>
               <div className="flex flex-wrap gap-2">
                 {application.fitReasons.map((reason, i) => (
                   <motion.div
