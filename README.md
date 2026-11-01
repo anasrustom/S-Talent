@@ -1,193 +1,160 @@
-# S Talent — Org Console
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/banner-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./.github/assets/banner-light.svg">
+  <img alt="S-Talent: hire interns on proof, not CVs" src="./.github/assets/banner-light.svg" width="100%">
+</picture>
 
-A hackathon-grade prototype for Snoonu's HR/Recruiter view, designed for receiving and managing applications for internships, volunteers, and fresh graduates.
+<p align="center">
+  <b>A hiring console that ranks interns, volunteers and fresh graduates by what they can do,<br>and shows the reason behind every single point.</b>
+</p>
 
-## 🎯 Features Implemented
+<p align="center">
+  <a href="#every-point-has-a-reason">See the score</a>
+  &nbsp;·&nbsp;
+  <a href="#proof-beats-a-cv">Skill tasks</a>
+  &nbsp;·&nbsp;
+  <a href="#run-it-in-60-seconds">Run it in 60 seconds</a>
+</p>
 
-### Core Screens
+<p align="center">
+  <img alt="Built at the Snoonu Hackathon 2026" src="https://img.shields.io/badge/Snoonu_Hackathon-2026-D90217?style=for-the-badge&labelColor=0d1117">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-ffffff?style=for-the-badge&logo=nextdotjs&logoColor=white&labelColor=0d1117">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=61DAFB&labelColor=0d1117">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?style=for-the-badge&logo=typescript&logoColor=3178C6&labelColor=0d1117">
+  <img alt="No API keys needed" src="https://img.shields.io/badge/API_keys-none-22C55E?style=for-the-badge&labelColor=0d1117">
+</p>
 
-#### 1. **Org Login / Org Switch**
-- Clean onboarding flow with organization selection
-- Role selection (Admin / Recruiter / Hiring Manager)
-- "Continue as Snoonu Business" entry point
-- Organizations: Qatar Foundation, Doha Events Co., Startup XYZ
+<br>
 
-#### 2. **Dashboard**
-- **Animated KPI Cards:**
-  - Open Roles (with trend indicators)
-  - New Applications Today
-  - Shortlisted Candidates
-  - Interviews This Week
-- **AI Triage Queue:** Top candidates across all roles with fit scores
-- **Upcoming Interviews:** Timeline view
-- **Roles Needing Attention:** High-volume or deadline-approaching roles
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/hero-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./.github/assets/hero-light.png">
+  <img alt="Applicants ranked by fit score, each with the reasons behind it" src="./.github/assets/hero-light.png" width="100%">
+</picture>
 
-#### 3. **Roles List + Detail**
-- **Roles List:**
-  - Search and filters (type: internship/volunteer/graduate)
-  - Role cards with applicant count, quality score, deadline
-  - Visual role type indicators
-- **Role Detail:**
-  - Comprehensive header with role info and quick stats
-  - Tabs: Applicants, Pipeline, Skill Proof, Interviews, Insights
-  - Full applicant list with fit scores and AI reasons
+<br>
 
-#### 4. **Applicants List** (⭐ SIGNATURE FEATURE)
-- **AI Triage Toggle:**
-  - Real-time AI ranking animation
-  - Candidates reordered by fit score (0-100)
-  - AI reasoning chips: "Matches availability", "Relevant projects", "Arabic + English", etc.
-  - Explainability badges on each candidate
-- **Views:** Card and Table layouts
-- **Filters:** University, skills, availability, Snoonu Plus badge
-- **Bulk Actions:** Shortlist, Reject, Message, Schedule Interview
-- **Multi-select:** Checkbox selection with action bar
+## 89 applications. One internship. Every CV says "quick learner."
 
-#### 5. **Pipeline Board** (⭐ WOW MOMENT)
-- **Interactive Drag-and-Drop:**
-  - Smooth physics-based animations
-  - Stages: New → Reviewed → Shortlisted → Interview → Offer → Hired
-  - Real-time stage updates with toast notifications
-  - Stage-level analytics (conversion rates)
-- **Visual Feedback:**
-  - Drag overlay with candidate card
-  - Stage highlighting on hover
-  - Animated transitions
+Picture a recruiter in Doha at 11 pm, on application 52 of 89. Same courses. Same clubs. Same "team player." The student who could actually do the job looks exactly like the ones who can't.
 
-#### 6. **Interviews Page**
-- **Auto-Scheduler (⭐ WOW MOMENT):**
-  - AI-powered optimal time slot recommendations
-  - Confidence scores for each slot (95%, 88%, 82%)
-  - Reasoning: "Both available", "Preferred time", etc.
-  - "AI thinking" animation (2 seconds)
-- **Interview Cards:**
-  - Date badges (today highlighted in red)
-  - Interviewer, duration, meeting link
-  - Quick actions: Join, Reschedule, Cancel
+And the students pay too. No experience means no job. No job means no experience.
 
-#### 7. **Insights Page**
-- Key metrics with trend indicators
-- Application trend line chart
-- Applications by type bar chart
-- Top talent sources with animated progress bars
+CVs are blind to ability. **S-Talent isn't.**
 
-## 🎨 Design System
+<br>
 
-### Themes
-- **Dark Mode (Default):** Hackathon-inspired with grid pattern, sharp animations
-- **Light Mode:** S City-inspired clean look with soft shadows
-- **Snoonu Brand Red:** `#D90217` used consistently
-- **Theme Toggle:** Persistent in localStorage
+## Meet S-Talent
 
-### Components Built
-- StatusPill, SkillChip, FitScoreRing, ConfidenceMeter
-- Card, Button, Input with hover states
-- Toast notifications system
-- Skeleton loaders
-- Command palette (⌘K trigger)
-- Animated counters
+**1. Rank.** One click puts every applicant in order of fit. No black box: the score is a sum of rules you can read.
 
-### Microinteractions
-- Page transitions (fade + slide)
-- Hover states on all interactive elements
-- Card lift animations
-- Button press feedback
-- Loading spinners and AI thinking states
-- Smooth drag-and-drop physics
+**2. Explain.** Open any candidate and see the receipt. Every point, and exactly why it was given.
 
-## 🔢 Hardcoded Data
+**3. Prove.** A candidate with no experience takes a short practical task in engineering, marketing, finance or design, instead of being filtered out by a CV.
 
-All data is structured and deterministic:
-- **10 candidates** with portfolios, skills, universities
-- **6 roles** across 3 organizations
-- **17 applications** with AI fit scores (calculated from skills overlap + availability)
-- **3 scheduled interviews**
-- **AI reasons** pre-generated based on candidate attributes
 
-### Fake AI Logic
-- **Fit Score:** Base 50 + skills match (10 pts each) + availability (15 pts) + Snoonu Plus (5 pts) + Arabic (10 pts)
-- **AI Reasons:** Generated from candidate data (projects, languages, availability, Plus status)
-- **Recommendations:** Accept (>75), Hold (60-75), Reject (<60)
+<br>
 
-## 🚀 Getting Started
+## Every point has a reason
 
-\`\`\`bash
-# Install dependencies
+Most screening tools hide the score inside a model and ask recruiters to trust it. S-Talent shows its working.
+
+<img alt="Score breakdown for one candidate: every point listed with its reason" src="./.github/assets/score-breakdown.png" width="100%">
+
+**The same applicant always gets the same score.** It is built from four kinds of evidence, and each one is listed with its points:
+
+- **Skills.** +10 for every required skill the candidate shows. Missing skills are listed too, at zero.
+- **Availability.** +15 if they can start now, +10 if flexible.
+- **Languages.** +10, but only when the role actually requires them.
+- **A visible cap.** If the total passes 100, the cap appears as its own line.
+
+Anything that is not about the job counts for nothing. A paid membership badge is displayed, and earns **zero** points.
+
+That matters more every year. The EU AI Act classes hiring algorithms as high risk, and New York City already requires bias audits for automated hiring tools. A score you can read line by line is a score you can audit.
+
+<sub>The whole engine is about 80 lines: <a href="./lib/data/mock-data.ts">lib/data/mock-data.ts</a></sub>
+
+<br>
+
+## Proof beats a CV
+
+Every task is scored the same way the fit score is: by a written rubric that shows the points behind each check. No hidden grader.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img alt="Engineering task running the candidate's code against tests" src="./.github/assets/skill-engineering.png" width="100%">
+      <br><b>Code that actually runs.</b> The engineering task executes the candidate's solution against real test cases, in the browser.
+    </td>
+    <td width="50%" valign="top">
+      <img alt="Finance task with live budget projections" src="./.github/assets/skill-finance.png" width="100%">
+      <br><b>Judgement, not keywords.</b> Split a 50,000 dollar budget across five channels and watch return, customers and cost per customer update live.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img alt="Design critique task with issues pinned on a checkout screen" src="./.github/assets/skill-design.png" width="100%">
+      <br><b>An eye for detail.</b> Critique a checkout screen. A five-check rubric scores it and shows where every point came from.
+    </td>
+    <td width="50%" valign="top">
+      <img alt="Drag and drop hiring pipeline with six stages" src="./.github/assets/pipeline.png" width="100%">
+      <br><b>One pipeline.</b> Drag candidates from New to Hired across six stages, with conversion computed from real stage counts.
+    </td>
+  </tr>
+</table>
+
+<br>
+
+## Under the hood
+
+```mermaid
+flowchart LR
+    A[Roles and their requirements] --> C{Score engine}
+    B[Candidates: skills, availability, languages, portfolio] --> C
+    C --> D[Fit score 0 to 100]
+    C --> E[Itemised breakdown]
+    C --> F[Reason chips]
+    D --> G[Rank by fit]
+    E --> H[Candidate profile]
+    F --> G
+    G --> I[Pipeline board]
+```
+
+- **Deterministic by design.** No randomness anywhere in scoring. The breakdown is computed first and the score is its sum, so the two can never disagree.
+- **Everything runs in the browser.** Next.js 16 App Router, React 19 and TypeScript, with Framer Motion for motion, dnd-kit for the pipeline and Recharts for insights.
+- **14 screens in about 6,000 lines,** from the recruiter dashboard to four SkillProof tasks, built overnight.
+
+<br>
+
+## Run it in 60 seconds
+
+```bash
+git clone https://github.com/anasrustom/S-Talent.git
+cd S-Talent
 npm install
-
-# Run development server
 npm run dev
+```
 
-# Open http://localhost:3000
-\`\`\`
+Open [localhost:3000](http://localhost:3000). No accounts, no database, no API keys.
 
-## 📂 Project Structure
+<br>
 
-\`\`\`
-app/
-  page.tsx                 # Org login
-  dashboard/page.tsx       # Dashboard with KPIs
-  roles/page.tsx           # Roles list
-  roles/[id]/page.tsx      # Role detail with tabs
-  applicants/page.tsx      # AI Triage + applicants list
-  pipeline/page.tsx        # Drag-drop pipeline board
-  interviews/page.tsx      # Auto-scheduler
-  insights/page.tsx        # Analytics
-components/
-  layout/MainLayout.tsx    # Sidebar navigation
-  ui/common.tsx           # Reusable UI components
-  ui/Toast.tsx            # Toast notification system
-lib/
-  data/types.ts           # TypeScript types
-  data/mock-data.ts       # All hardcoded data
-  contexts/ThemeContext.tsx # Theme provider
-\`\`\`
+## What's real, and what's next
 
-## 🎭 Demo Mode
+- [x] Explainable fit score with an itemised breakdown for every application
+- [x] Four SkillProof tasks, each scored by a visible rubric, with the engineering task running real tests
+- [x] Six-stage drag and drop pipeline, with every dashboard and insight number computed from the data
+- [ ] Backend, sign-in and real applicant data (today the app ships realistic demo data: 10 candidates, 6 roles)
+- [ ] Let each recruiter set the weights per role
+- [ ] Learn the weights from hiring outcomes, while keeping every point explainable
 
-- **Fixed badge** in bottom-right: "🎭 DEMO MODE"
-- All actions are fake (toasts confirm actions)
-- Data persists only in session
+We built this in one night. It is a working prototype, not a product, and the list above is honest about the gap.
 
-## 💡 Key Technical Choices
-
-- **Next.js 14+** with App Router
-- **Framer Motion** for all animations
-- **@dnd-kit** for accessible drag-and-drop
-- **Recharts** for data visualization
-- **Lucide React** for consistent icons
-- **Tailwind CSS 4** with custom CSS variables
-- **TypeScript** for type safety
-
-## 🌟 Highlights
-
-1. **AI Triage is the hero feature** - toggle triggers smooth animation, instant reordering
-2. **Pipeline physics feel premium** - satisfying drag-and-drop with toast feedback
-3. **Auto-scheduler is polished** - modal with 3 recommended slots, confidence meters
-4. **Dark mode has grid pattern** - hackathon aesthetic, snappy animations
-5. **Fit Score rings animate in** - circular progress with color coding
-6. **Everything is responsive** - works on desktop and tablet
-
-## 🎯 What's Hardcoded (Intentionally)
-
-- ✅ All candidate data, applications, interviews
-- ✅ AI fit scores and reasons
-- ✅ Org switcher (non-functional selector)
-- ✅ Command palette (shows mock results)
-- ✅ Skill proof (placeholder UI)
-- ✅ All "Send Message", "Export", etc. actions
-
-## 🔮 Future Enhancements (Beyond Hackathon)
-
-- Real backend integration
-- Actual AI model for ranking
-- Video interview integration
-- Candidate messaging
-- Advanced filters and search
-- Team collaboration features
-- Analytics dashboard expansion
-- Mobile app
+<br>
 
 ---
 
-**Built for Snoonu Hackathon 2026** 🚀
+<p align="center">
+  <sub>Built overnight at the <b>Snoonu Hackathon</b>, Doha, January 2026, by <a href="https://github.com/anasrustom">Anas Rustom</a> and team.<br>
+  S-Talent is an independent hackathon project and is not an official Snoonu product. Snoonu's name and brand belong to Snoonu.</sub>
+</p>
