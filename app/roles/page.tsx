@@ -7,6 +7,7 @@ import { Card, StatusPill } from '@/components/ui/common';
 import { roles, applications, roleStats } from '@/lib/data/mock-data';
 import { useState } from 'react';
 import Link from 'next/link';
+import { deadlineLabel } from '@/lib/format';
 
 export default function RolesPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,7 +151,6 @@ export default function RolesPage() {
             const roleApps = applications.filter(a => a.roleId === role.id);
             const newApps = roleApps.filter(a => a.stage === 'new').length;
             const Icon = getRoleIcon(role.type);
-            const daysUntilDeadline = Math.ceil((new Date(role.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
             
             return (
               <motion.div
@@ -226,7 +226,7 @@ export default function RolesPage() {
                     <div className="flex items-center justify-between pt-4 border-t border-default">
                       <div className="flex items-center gap-2 text-xs text-secondary">
                         <Calendar className="w-4 h-4" />
-                        <span>{daysUntilDeadline} days left</span>
+                        <span suppressHydrationWarning>{deadlineLabel(role.deadline)}</span>
                       </div>
                       {newApps > 0 && (
                         <span className="badge badge-primary">

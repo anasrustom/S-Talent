@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FitScoreRing } from '@/components/ui/common';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { formatDate, formatTime } from '@/lib/format';
 
 function AnimatedCounter({ value, duration = 2000 }: { value: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -252,14 +253,14 @@ export default function Dashboard() {
                     >
                       <div className="flex items-start gap-2">
                         <div className="w-7 h-7 bg-info rounded-lg flex items-center justify-center text-invert text-xs font-bold flex-shrink-0">
-                          {date.getDate()}
+                          {formatDate(date, { day: 'numeric' })}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-primary text-xs truncate">
                             {candidate?.name}
                           </p>
                           <p className="text-xs text-muted">
-                            {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                            {formatTime(date)}
                           </p>
                         </div>
                       </div>
@@ -376,7 +377,7 @@ export default function Dashboard() {
                       <div className="mt-1 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-muted" />
                         <span className="text-xs text-muted">
-                          {new Date(role.deadline).toLocaleDateString()}
+                          {formatDate(role.deadline)}
                         </span>
                       </div>
                     </motion.div>

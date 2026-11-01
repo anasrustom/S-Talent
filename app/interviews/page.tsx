@@ -7,6 +7,7 @@ import { Card, Button } from '@/components/ui/common';
 import { interviews, applications, candidates } from '@/lib/data/mock-data';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/Toast';
+import { formatDate, formatTime } from '@/lib/format';
 
 export default function InterviewsPage() {
   const { addToast } = useToast();
@@ -77,7 +78,7 @@ export default function InterviewsPage() {
               <div className="space-y-4">
                 {upcomingInterviews.map((interview, index) => {
                   const date = new Date(interview.scheduledAt);
-                  const isToday = date.toDateString() === new Date().toDateString();
+                  const isToday = formatDate(date) === formatDate(new Date());
                   
                   return (
                     <motion.div
@@ -93,9 +94,9 @@ export default function InterviewsPage() {
                           isToday ? 'bg-snoonu-red text-invert' : 'bg-info text-invert'
                         }`}>
                           <span className="text-xs font-medium">
-                            {date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()}
+                            {formatDate(date, { month: 'short' }).toUpperCase()}
                           </span>
-                          <span className="text-2xl font-bold">{date.getDate()}</span>
+                          <span className="text-2xl font-bold">{formatDate(date, { day: 'numeric' })}</span>
                         </div>
 
                         {/* Interview Details */}
@@ -111,7 +112,7 @@ export default function InterviewsPage() {
                             <div className="flex items-center gap-2">
                               <Clock className="w-4 h-4" />
                               <span>
-                                {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                {formatTime(date)}
                                 {' '}({interview.duration} min)
                               </span>
                             </div>

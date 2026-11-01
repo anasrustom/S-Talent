@@ -8,6 +8,7 @@ import { applications, roles, candidates } from '@/lib/data/mock-data';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FitScoreRing } from '@/components/ui/common';
+import { formatDate } from '@/lib/format';
 
 export default function ApplicantDetailPage() {
   const params = useParams();
@@ -117,7 +118,7 @@ export default function ApplicantDetailPage() {
                   <div className="px-4 py-3 rounded-lg bg-secondary border border-border/20">
                     <p className="text-xs text-muted mb-1">Graduation</p>
                     <p className="text-sm font-semibold text-primary">
-                      {new Date(candidate.graduationDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                      {formatDate(candidate.graduationDate, { month: 'short', year: 'numeric' })}
                     </p>
                   </div>
                   <div className="px-4 py-3 rounded-lg bg-secondary border border-border/20">
@@ -180,11 +181,7 @@ export default function ApplicantDetailPage() {
                 <p className="text-sm text-muted mb-2">Current Stage</p>
                 <p className="text-xl font-bold text-primary mb-1 capitalize">{application.stage}</p>
                 <p className="text-xs text-muted">
-                  Applied {new Date(application.appliedAt).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                  })}
+                  Applied {formatDate(application.appliedAt)}
                 </p>
               </div>
             </div>
@@ -376,7 +373,7 @@ export default function ApplicantDetailPage() {
                           <h3 className="font-semibold text-primary mb-1">{cert.title}</h3>
                           <p className="text-sm text-muted">{cert.issuer}</p>
                           <p className="text-xs text-muted mt-1">
-                            {new Date(cert.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                            {formatDate(cert.date, { month: 'long', year: 'numeric' })}
                           </p>
                         </div>
                       </div>

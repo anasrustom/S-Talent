@@ -8,6 +8,7 @@ import { roles, applications, candidates, roleStats } from '@/lib/data/mock-data
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { deadlineLabel, formatDate } from '@/lib/format';
 
 const tabs = [
   { id: 'applicants', label: 'Applicants', icon: Users },
@@ -56,7 +57,6 @@ export default function RoleDetailPage() {
     .sort((a, b) => b.missing - a.missing)[0];
 
   const Icon = roleIcons[role.type];
-  const daysUntilDeadline = Math.ceil((new Date(role.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
   return (
     <MainLayout>
@@ -109,7 +109,7 @@ export default function RoleDetailPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    <span>Deadline: {new Date(role.deadline).toLocaleDateString()} ({daysUntilDeadline} days)</span>
+                    <span suppressHydrationWarning>Deadline: {formatDate(role.deadline)} ({deadlineLabel(role.deadline)})</span>
                   </div>
                 </div>
 
