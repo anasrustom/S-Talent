@@ -31,13 +31,13 @@ export default function MarketingChallengePage() {
   const [hashtag, setHashtag] = useState('');
   const [strategy, setStrategy] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [aiScore, setAiScore] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
 
   const handleSubmit = () => {
     setIsSubmitted(true);
-    // Simulate AI evaluation
+    // Demo: shows a sample rubric result after submission
     setTimeout(() => {
-      setAiScore(87);
+      setScore(87);
     }, 1500);
   };
 
@@ -66,14 +66,14 @@ export default function MarketingChallengePage() {
             </div>
             
             <button 
-              className={`btn ${isSubmitted && aiScore ? 'btn-success' : 'btn-primary'}`}
+              className={`btn ${isSubmitted && score ? 'btn-success' : 'btn-primary'}`}
               onClick={handleSubmit}
               disabled={!isComplete || isSubmitted}
             >
-              {isSubmitted && aiScore ? (
+              {isSubmitted && score ? (
                 <>
                   <CheckCircle2 className="w-5 h-5" />
-                  Score: {aiScore}/100
+                  Score: {score}/100
                 </>
               ) : (
                 <>
@@ -167,8 +167,8 @@ export default function MarketingChallengePage() {
                 </Card>
               </motion.div>
 
-              {/* AI Feedback */}
-              {isSubmitted && aiScore && (
+              {/* Evaluation feedback */}
+              {isSubmitted && score && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -179,8 +179,8 @@ export default function MarketingChallengePage() {
                         <TrendingUp className="w-6 h-6 text-success" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-success">AI Evaluation Complete</h3>
-                        <p className="text-sm text-muted">Score: {aiScore}/100</p>
+                        <h3 className="text-lg font-bold text-success">Evaluation complete</h3>
+                        <p className="text-sm text-muted">Sample rubric score: {score}/100</p>
                       </div>
                     </div>
 

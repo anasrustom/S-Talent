@@ -47,7 +47,7 @@ export default function DesignChallengePage() {
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [aiScore, setAiScore] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
 
   const handleAnswerChange = (questionId: number, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
@@ -56,7 +56,7 @@ export default function DesignChallengePage() {
   const handleSubmit = () => {
     setIsSubmitted(true);
     setTimeout(() => {
-      setAiScore(89);
+      setScore(89);
     }, 1500);
   };
 
@@ -93,14 +93,14 @@ export default function DesignChallengePage() {
                 {showAnnotations ? 'Hide' : 'Show'} Issues
               </button>
               <button 
-                className={`btn ${isSubmitted && aiScore ? 'btn-success' : 'btn-primary'}`}
+                className={`btn ${isSubmitted && score ? 'btn-success' : 'btn-primary'}`}
                 onClick={handleSubmit}
                 disabled={!allAnswered || isSubmitted}
               >
-                {isSubmitted && aiScore ? (
+                {isSubmitted && score ? (
                   <>
                     <CheckCircle2 className="w-5 h-5" />
-                    Score: {aiScore}/100
+                    Score: {score}/100
                   </>
                 ) : (
                   <>
@@ -326,8 +326,8 @@ export default function DesignChallengePage() {
                 </motion.div>
               ))}
 
-              {/* AI Feedback */}
-              {isSubmitted && aiScore && (
+              {/* Evaluation feedback */}
+              {isSubmitted && score && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -339,7 +339,7 @@ export default function DesignChallengePage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-success">Excellent Analysis!</h3>
-                        <p className="text-sm text-muted">Score: {aiScore}/100</p>
+                        <p className="text-sm text-muted">Sample rubric score: {score}/100</p>
                       </div>
                     </div>
 

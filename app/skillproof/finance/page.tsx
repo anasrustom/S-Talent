@@ -31,7 +31,7 @@ export default function FinanceChallengePage() {
   const [allocations, setAllocations] = useState<{ [key: string]: number }>({});
   const [reasoning, setReasoning] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [aiScore, setAiScore] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
 
   // Initialize allocations
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function FinanceChallengePage() {
   const handleSubmit = () => {
     setIsSubmitted(true);
     setTimeout(() => {
-      setAiScore(meetsGoals ? 92 : 78);
+      setScore(meetsGoals ? 92 : 78);
     }, 1500);
   };
 
@@ -103,14 +103,14 @@ export default function FinanceChallengePage() {
             </div>
             
             <button 
-              className={`btn ${isSubmitted && aiScore ? 'btn-success' : 'btn-primary'}`}
+              className={`btn ${isSubmitted && score ? 'btn-success' : 'btn-primary'}`}
               onClick={handleSubmit}
               disabled={!canSubmit || isSubmitted}
             >
-              {isSubmitted && aiScore ? (
+              {isSubmitted && score ? (
                 <>
                   <CheckCircle2 className="w-5 h-5" />
-                  Score: {aiScore}/100
+                  Score: {score}/100
                 </>
               ) : (
                 <>
@@ -357,7 +357,7 @@ export default function FinanceChallengePage() {
                 </Card>
               </motion.div>
 
-              {isSubmitted && aiScore && (
+              {isSubmitted && score && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -369,7 +369,7 @@ export default function FinanceChallengePage() {
                       </div>
                       <div>
                         <h3 className="font-bold text-success">Analysis Complete</h3>
-                        <p className="text-sm text-muted">Score: {aiScore}/100</p>
+                        <p className="text-sm text-muted">Score: {score}/100</p>
                       </div>
                     </div>
                     <div className="space-y-2 text-sm">

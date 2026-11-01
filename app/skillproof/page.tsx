@@ -61,7 +61,7 @@ export default function SkillProofPage() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-snoonu-red/10 border border-snoonu-red/20 mb-6">
             <Sparkles className="w-4 h-4 snoonu-red" />
-            <span className="text-sm font-semibold snoonu-red">AI-Powered Skill Validation</span>
+            <span className="text-sm font-semibold snoonu-red">Practical skill validation</span>
           </div>
           
           <h1 className="text-5xl font-bold text-primary mb-4">
@@ -87,7 +87,7 @@ export default function SkillProofPage() {
               </div>
               <div className="text-left">
                 <p className="font-bold text-primary">Instant Feedback</p>
-                <p className="text-muted">AI evaluation</p>
+                <p className="text-muted">Rubric scoring</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function SkillProofPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-primary">Get instant feedback</p>
-                      <p className="text-sm text-muted">AI-powered evaluation helps you improve</p>
+                      <p className="text-sm text-muted">Rubric-based feedback helps you improve</p>
                     </div>
                   </li>
                 </ul>
@@ -205,7 +205,7 @@ export default function SkillProofPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-primary">Save time screening</p>
-                      <p className="text-sm text-muted">AI evaluates submissions automatically</p>
+                      <p className="text-sm text-muted">Every submission is scored on the same rubric</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">

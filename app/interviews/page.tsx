@@ -29,10 +29,11 @@ export default function InterviewsPage() {
     setTimeout(() => {
       setIsScheduling(false);
       setShowAutoSchedule(false);
-      addToast('3 interviews auto-scheduled with optimal time slots', 'success');
+      addToast('3 interviews scheduled in the suggested slots', 'success');
     }, 2000);
   };
 
+  // Suggested slots are fixed sample data in this demo
   const recommendedSlots = [
     { time: 'Tomorrow, 2:00 PM', reason: 'Both available • Preferred time', confidence: 95 },
     { time: 'Jan 22, 10:00 AM', reason: 'Interviewer available • Morning slot', confidence: 88 },
@@ -211,8 +212,8 @@ export default function InterviewsPage() {
                     <Sparkles className="w-6 h-6 snoonu-red" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">AI Auto-Scheduler</h2>
-                    <p className="text-sm text-muted">Finding optimal interview slots...</p>
+                    <h2 className="text-xl font-bold text-primary">Auto-scheduler</h2>
+                    <p className="text-sm text-muted">Suggested slots</p>
                   </div>
                 </div>
 
@@ -226,7 +227,7 @@ export default function InterviewsPage() {
                       <Sparkles className="w-8 h-8 snoonu-red" />
                     </motion.div>
                     <p className="text-lg font-semibold text-primary">Scheduling interviews...</p>
-                    <p className="text-sm text-muted mt-2">Analyzing availability and preferences</p>
+                    <p className="text-sm text-muted mt-2">Sending invites for the suggested slots</p>
                   </div>
                 ) : (
                   <>
