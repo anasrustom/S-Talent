@@ -5,7 +5,7 @@
 </picture>
 
 <p align="center">
-  <b>A hiring console that ranks interns, volunteers and fresh graduates by what they can do,<br>and shows the reason behind every single point.</b>
+  <b>A hiring console that ranks interns, volunteers and fresh graduates with a score you can read line by line,<br>and lets candidates with no experience prove a skill with a short practical task.</b>
 </p>
 
 <p align="center">
@@ -34,13 +34,13 @@
 
 <br>
 
-## 89 applications. One internship. Every CV says "quick learner."
+## Every early-career CV says "quick learner."
 
-Picture a recruiter in Doha at 11 pm, on application 52 of 89. Same courses. Same clubs. Same "team player." The student who could actually do the job looks exactly like the ones who can't.
+Picture a recruiter in Doha late at night, deep in a pile of applications for one internship. Same courses. Same clubs. Same "team player." The student who could actually do the job looks exactly like the ones who can't.
 
 And the students pay too. No experience means no job. No job means no experience.
 
-CVs are blind to ability. **S-Talent isn't.**
+CVs are blind to ability. **S-Talent shows recruiters exactly why each applicant ranks where they do, and gives candidates with no experience a way to prove what they can do.**
 
 <br>
 
@@ -61,24 +61,25 @@ Most screening tools hide the score inside a model and ask recruiters to trust i
 
 <img alt="Score breakdown for one candidate: every point listed with its reason" src="./.github/assets/score-breakdown.png" width="100%">
 
-**The same applicant always gets the same score.** It is built from four kinds of evidence, and each one is listed with its points:
+**The same applicant always gets the same score.** Every complete application starts at 50 points. The rest is evidence, each line listed with its points:
 
-- **Skills.** +10 for every required skill the candidate shows. Missing skills are listed too, at zero.
+- **Skills.** +10 for every required skill the candidate lists. Missing skills are listed too, at zero.
 - **Availability.** +15 if they can start now, +10 if flexible.
 - **Languages.** +10, but only when the role actually requires them.
-- **A visible cap.** If the total passes 100, the cap appears as its own line.
 
-Anything that is not about the job counts for nothing. A paid membership badge is displayed, and earns **zero** points.
+If the total passes 100, the cap appears as its own line.
 
-That matters more every year. The EU AI Act classes hiring algorithms as high risk, and New York City already requires bias audits for automated hiring tools. A score you can read line by line is a score you can audit.
+Anything that is not about the job counts for nothing. A Snoonu Plus membership chip is shown on the card but earns **zero** points; only the lines in the breakdown score.
 
-<sub>The whole engine is about 80 lines: <a href="./lib/data/mock-data.ts">lib/data/mock-data.ts</a></sub>
+That matters more every year: the EU AI Act classes hiring algorithms as high risk, and New York City requires bias audits for automated hiring tools. A score you can read line by line is a score you can audit.
+
+<sub>The whole score engine is about 60 lines: <a href="./lib/data/mock-data.ts#L393-L452">lib/data/mock-data.ts</a></sub>
 
 <br>
 
 ## Proof beats a CV
 
-Every task is scored the same way the fit score is: by a written rubric that shows the points behind each check. No hidden grader.
+Every task shows how it was scored. The design, marketing and finance tasks use a written rubric with the points behind each check; the engineering task runs the code against test cases. No hidden grader.
 
 <table>
   <tr>
@@ -98,7 +99,7 @@ Every task is scored the same way the fit score is: by a written rubric that sho
     </td>
     <td width="50%" valign="top">
       <img alt="Drag and drop hiring pipeline with six stages" src="./.github/assets/pipeline.png" width="100%">
-      <br><b>One pipeline.</b> Drag candidates from New to Hired across six stages, with conversion computed from real stage counts.
+      <br><b>One pipeline.</b> Six stages from New to Hired. Drag a candidate forward, and conversion is computed from the real stage counts.
     </td>
   </tr>
 </table>
@@ -110,8 +111,8 @@ Every task is scored the same way the fit score is: by a written rubric that sho
 ```mermaid
 flowchart LR
     A[Roles and their requirements] --> C{Score engine}
-    B[Candidates: skills, availability, languages, portfolio] --> C
-    C --> D[Fit score 0 to 100]
+    B[Candidates: skills, availability, languages] --> C
+    C --> D[Fit score, capped at 100]
     C --> E[Itemised breakdown]
     C --> F[Reason chips]
     D --> G[Rank by fit]
@@ -122,7 +123,7 @@ flowchart LR
 
 - **Deterministic by design.** No randomness anywhere in scoring. The breakdown is computed first and the score is its sum, so the two can never disagree.
 - **Everything runs in the browser.** Next.js 16 App Router, React 19 and TypeScript, with Framer Motion for motion, dnd-kit for the pipeline and Recharts for insights.
-- **14 screens in about 6,000 lines,** from the recruiter dashboard to four SkillProof tasks, built overnight.
+- **14 screens in about 6,300 lines,** from the recruiter dashboard to four SkillProof tasks.
 
 <br>
 
@@ -142,13 +143,13 @@ Open [localhost:3000](http://localhost:3000). No accounts, no database, no API k
 ## What's real, and what's next
 
 - [x] Explainable fit score with an itemised breakdown for every application
-- [x] Four SkillProof tasks, each scored by a visible rubric, with the engineering task running real tests
+- [x] Four SkillProof tasks: three scored by a visible rubric, and an engineering task that runs real tests
 - [x] Six-stage drag and drop pipeline, with every dashboard and insight number computed from the data
 - [ ] Backend, sign-in and real applicant data (today the app ships realistic demo data: 10 candidates, 6 roles)
 - [ ] Let each recruiter set the weights per role
 - [ ] Learn the weights from hiring outcomes, while keeping every point explainable
 
-We built this in one night. It is a working prototype, not a product, and the list above is honest about the gap.
+The first version was built in one night at the hackathon: see the [hackathon-submission](../../tree/hackathon-submission) tag. Since then I rewrote the fit score to be deterministic and explainable, made the engineering task run real tests and gave the other tasks written rubrics. It is a working prototype, not a product, and the list above is honest about the gap.
 
 <br>
 
