@@ -14,8 +14,8 @@ type ViewMode = 'table' | 'card';
 export default function ApplicantsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
-  const [aiTriageEnabled, setAiTriageEnabled] = useState(false);
-  const [showAiThinking, setShowAiThinking] = useState(false);
+  const [rankByFit, setRankByFit] = useState(false);
+  const [isScoring, setIsScoring] = useState(false);
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [universityFilter, setUniversityFilter] = useState<string>('all');
   const { addToast } = useToast();
@@ -39,24 +39,24 @@ export default function ApplicantsPage() {
     return matchesSearch && matchesUniversity;
   });
 
-  // AI Triage sorting
+  // Rank by fit score (copy first, never sort shared data in place)
   const sortedApps = useMemo(() => {
-    if (!aiTriageEnabled) return filteredApps;
+    if (!rankByFit) return filteredApps;
     return [...filteredApps].sort((a, b) => b.fitScore - a.fitScore);
-  }, [filteredApps, aiTriageEnabled]);
+  }, [filteredApps, rankByFit]);
 
   // Get unique universities
   const universities = Array.from(new Set(candidates.map(c => c.university)));
 
-  const handleAiTriageToggle = () => {
-    setShowAiThinking(true);
+  const handleRankToggle = () => {
+    setIsScoring(true);
     setTimeout(() => {
-      setAiTriageEnabled(!aiTriageEnabled);
-      setShowAiThinking(false);
+      setRankByFit(!rankByFit);
+      setIsScoring(false);
       addToast(
-        aiTriageEnabled 
-          ? 'AI Triage disabled' 
-          : 'AI Triage enabled - candidates reranked by fit score',
+        rankByFit 
+          ? 'Ranking by fit turned off'
+          : 'Ranked by fit score: highest fit first',
         'success'
       );
     }, 1500);
@@ -110,7 +110,7 @@ export default function ApplicantsPage() {
           </div>
         </motion.div>
 
-        {/* Search and AI Triage */}
+        {/* Search and Rank by fit */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: 20 }}
@@ -130,20 +130,20 @@ export default function ApplicantsPage() {
               />
             </div>
 
-            {/* AI Triage Toggle - SIGNATURE FEATURE */}
+            {/* Rank by fit toggle: signature feature */}
             <motion.button
               className={`btn flex items-center gap-2 ${
-                aiTriageEnabled 
+                rankByFit 
                   ? 'btn-primary shadow-lg' 
                   : 'btn-secondary'
               }`}
-              onClick={handleAiTriageToggle}
-              disabled={showAiThinking}
+              onClick={handleRankToggle}
+              disabled={isScoring}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Sparkles className={`w-5 h-5 ${showAiThinking ? 'animate-spin' : ''}`} />
-              {showAiThinking ? 'AI Thinking...' : aiTriageEnabled ? 'AI Triage: ON' : 'Enable AI Triage'}
+              <Sparkles className={`w-5 h-5 ${isScoring ? 'animate-spin' : ''}`} />
+              {isScoring ? 'Scoring candidates...' : rankByFit ? 'Ranked by fit score' : 'Rank by fit'}
             </motion.button>
 
             <button className="btn btn-ghost">
@@ -172,9 +172,9 @@ export default function ApplicantsPage() {
           </div>
         </motion.div>
 
-        {/* AI Triage Info Banner */}
+        {/* Rank by fit info banner */}
         <AnimatePresence>
-          {aiTriageEnabled && (
+          {rankByFit && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -185,9 +185,9 @@ export default function ApplicantsPage() {
                 <div className="flex items-center gap-3">
                   <Sparkles className="w-5 h-5 snoonu-red flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-primary">AI Triage Active</p>
+                    <p className="text-sm font-semibold text-primary">Ranked by fit score</p>
                     <p className="text-xs text-secondary">
-                      Candidates are ranked by AI fit score. Reasons include skills match, availability, language proficiency, and portfolio strength.
+                      Highest fit first. The score adds up required skills matched, availability and required languages; open any candidate to see every point.
                     </p>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export default function ApplicantsPage() {
 
         {/* Loading State */}
         <AnimatePresence>
-          {showAiThinking && (
+          {isScoring && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -254,7 +254,7 @@ export default function ApplicantsPage() {
                 >
                   <Sparkles className="w-8 h-8 snoonu-red" />
                 </motion.div>
-                <p className="text-lg font-semibold text-primary">AI is analyzing candidates...</p>
+                <p className="text-lg font-semibold text-primary">Scoring candidates...</p>
                 <p className="text-sm text-muted mt-2">Ranking by fit score and relevance</p>
               </Card>
             </motion.div>
@@ -268,7 +268,7 @@ export default function ApplicantsPage() {
               key={app.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: showAiThinking ? 0 : index * 0.03 }}
+              transition={{ delay: isScoring ? 0 : index * 0.03 }}
               layout
             >
               {viewMode === 'card' ? (
@@ -313,10 +313,10 @@ export default function ApplicantsPage() {
                         {app.candidate.university} • {app.candidate.major}
                       </p>
                       
-                      {/* AI Reasons */}
-                      {aiTriageEnabled && (
+                      {/* Fit reasons */}
+                      {rankByFit && (
                         <div className="flex flex-wrap gap-1.5 mb-3">
-                          {app.aiReasons.map((reason, i) => (
+                          {app.fitReasons.map((reason, i) => (
                             <span key={i} className="text-sm px-2 py-0.5 rounded-full bg-snoonu-red/10 snoonu-red font-medium">
                               ✓ {reason}
                             </span>

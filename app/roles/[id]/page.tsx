@@ -112,6 +112,9 @@ export default function RoleDetailPage() {
                   {role.requirements.map((req, i) => (
                     <SkillChip key={i} skill={req} />
                   ))}
+                  {role.languages?.map(lang => (
+                    <SkillChip key={lang} skill={`${lang} required`} />
+                  ))}
                 </div>
               </div>
 
@@ -183,7 +186,7 @@ export default function RoleDetailPage() {
                   Applicants ({roleApps.length})
                 </h2>
                 <div className="space-y-3">
-                  {roleAppsWithCandidates
+                  {[...roleAppsWithCandidates]
                     .sort((a, b) => b.fitScore - a.fitScore)
                     .map((app, index) => (
                       <motion.div
@@ -212,7 +215,7 @@ export default function RoleDetailPage() {
                             {app.candidate.university} • {app.candidate.major}
                           </p>
                           <div className="flex flex-wrap gap-1.5">
-                            {app.aiReasons.map((reason, i) => (
+                            {app.fitReasons.map((reason, i) => (
                               <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-tertiary text-secondary">
                                 {reason}
                               </span>
@@ -221,7 +224,9 @@ export default function RoleDetailPage() {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button variant="primary" size="sm">Review</Button>
+                          <Link href={`/applicants/${app.id}`}>
+                            <Button variant="primary" size="sm">Review</Button>
+                          </Link>
                           <Button variant="ghost" size="sm">Details</Button>
                         </div>
                       </motion.div>

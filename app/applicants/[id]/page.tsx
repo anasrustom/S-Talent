@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Mail, GraduationCap, Calendar, Globe, Award, Briefcase, Star, TrendingUp, CheckCircle2, FileText, Link as LinkIcon, Trophy, Sparkles, Target, Brain } from 'lucide-react';
+import { ArrowLeft, Mail, GraduationCap, Calendar, Globe, Award, Briefcase, CheckCircle2, Link as LinkIcon, Trophy, Sparkles, Target, Brain, ListChecks } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import { applications, roles, candidates } from '@/lib/data/mock-data';
 import { useParams, useRouter } from 'next/navigation';
@@ -33,14 +33,13 @@ export default function ApplicantDetailPage() {
   const candidate = candidates.find(c => c.id === application.candidateId)!;
   const role = roles.find(r => r.id === application.roleId)!;
 
-  // Calculate AI rank
+  // Rank in pool by fit score
   const roleApplications = applications.filter(app => app.roleId === role.id);
   const sortedByFitScore = [...roleApplications].sort((a, b) => b.fitScore - a.fitScore);
   const rank = sortedByFitScore.findIndex(app => app.id === applicationId) + 1;
   const totalApplicants = roleApplications.length;
 
-  // Calculate GPA (mock - between 3.0 and 4.0)
-  const gpa = (3.0 + Math.random() * 1.0).toFixed(2);
+  const gpa = candidate.gpa.toFixed(2);
 
   return (
     <MainLayout>
@@ -103,7 +102,7 @@ export default function ApplicantDetailPage() {
                     </div>
                   </div>
 
-                  {/* AI Fit Score */}
+                  {/* Fit Score */}
                   <div className="flex flex-col items-center lg:items-end">
                     <FitScoreRing score={application.fitScore} size="lg" showLabel={true} />
                   </div>
@@ -135,7 +134,7 @@ export default function ApplicantDetailPage() {
           </Card>
         </motion.div>
 
-        {/* AI Analysis Section */}
+        {/* Fit Analysis Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -148,31 +147,31 @@ export default function ApplicantDetailPage() {
                 <Sparkles className="w-5 h-5 snoonu-red" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-primary">AI Analysis</h2>
-                <p className="text-sm text-muted">Powered by advanced matching algorithms</p>
+                <h2 className="text-xl font-bold text-primary">Fit analysis</h2>
+                <p className="text-sm text-muted">Explainable fit score: every point has a reason</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* AI Rank */}
+              {/* Rank */}
               <div className="text-center p-6 rounded-xl bg-gradient-to-br from-snoonu-red/5 to-transparent border border-snoonu-red/10">
                 <Target className="w-8 h-8 snoonu-red mx-auto mb-3" />
-                <p className="text-sm text-muted mb-2">AI Rank in Pool</p>
+                <p className="text-sm text-muted mb-2">Rank in pool</p>
                 <p className="text-4xl font-bold gradient-text mb-1">#{rank}</p>
                 <p className="text-xs text-muted">out of {totalApplicants} applicants</p>
               </div>
 
-              {/* AI Recommendation */}
+              {/* Recommendation */}
               <div className="text-center p-6 rounded-xl bg-secondary border border-border/20">
                 <Brain className="w-8 h-8 text-info mx-auto mb-3" />
-                <p className="text-sm text-muted mb-2">AI Recommendation</p>
+                <p className="text-sm text-muted mb-2">Recommendation</p>
                 <p className={`text-2xl font-bold mb-1 ${
-                  application.aiRecommendation === 'accept' ? 'text-success' :
-                  application.aiRecommendation === 'hold' ? 'text-warning' : 'text-error'
+                  application.recommendation === 'accept' ? 'text-success' :
+                  application.recommendation === 'hold' ? 'text-warning' : 'text-error'
                 }`}>
-                  {application.aiRecommendation.toUpperCase()}
+                  {application.recommendation.toUpperCase()}
                 </p>
-                <p className="text-xs text-muted">{application.aiConfidence}% confidence</p>
+                <p className="text-xs text-muted">{application.confidence}% confidence</p>
               </div>
 
               {/* Stage */}
@@ -190,11 +189,11 @@ export default function ApplicantDetailPage() {
               </div>
             </div>
 
-            {/* AI Reasons */}
+            {/* Fit Reasons */}
             <div className="mt-6 pt-6 border-t border-border">
               <h3 className="text-sm font-semibold text-muted mb-3">Why This Candidate Stands Out</h3>
               <div className="flex flex-wrap gap-2">
-                {application.aiReasons.map((reason, i) => (
+                {application.fitReasons.map((reason, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -207,6 +206,47 @@ export default function ApplicantDetailPage() {
                 ))}
               </div>
             </div>
+          </Card>
+        </motion.div>
+
+        {/* Score Breakdown */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mb-6"
+        >
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-snoonu-red/10 rounded-lg flex items-center justify-center">
+                <ListChecks className="w-5 h-5 snoonu-red" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-primary">Score breakdown</h2>
+                <p className="text-sm text-muted">How {application.fitScore} points were earned for {role.title}</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-default bg-secondary overflow-hidden">
+              {application.scoreBreakdown.map((line, i) => (
+                <div key={i} className={`flex items-center justify-between gap-4 px-4 py-3 ${i > 0 ? 'border-t border-default' : ''}`}>
+                  <span className={`text-sm ${line.points === 0 ? 'text-muted' : 'text-primary'}`}>{line.label}</span>
+                  <span
+                    className="text-sm font-semibold tabular-nums"
+                    style={{ color: line.points > 0 ? 'var(--success)' : line.points < 0 ? 'var(--error)' : 'var(--foreground-muted)' }}
+                  >
+                    {line.points > 0 ? `+${line.points}` : line.points}
+                  </span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between gap-4 px-4 py-3 border-t border-default">
+                <span className="text-sm font-bold text-primary">Fit score</span>
+                <span className="text-lg font-bold gradient-text tabular-nums">{application.fitScore}</span>
+              </div>
+            </div>
+            {candidate.snoonuPlus && (
+              <p className="text-xs text-muted mt-3">Snoonu Plus membership is shown as a badge only and adds no points.</p>
+            )}
           </Card>
         </motion.div>
 

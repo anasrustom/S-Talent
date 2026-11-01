@@ -60,7 +60,8 @@ export function FitScoreRing({ score, size = 'md', showLabel = true }: FitScoreR
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
   
-  const color = score >= 75 ? '#10B981' : score >= 60 ? '#F59E0B' : '#EF4444';
+  // Same thresholds as the accept / hold / reject recommendation
+  const color = score > 75 ? '#10B981' : score > 60 ? '#F59E0B' : '#EF4444';
   
   return (
     <div className="flex flex-col items-center gap-1">

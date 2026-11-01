@@ -108,8 +108,8 @@ export default function Dashboard() {
     { stage: 'Hired', count: 15 },
   ];
 
-  // Top candidates by fit score
-  const topCandidateApps = applications
+  // Top candidates by fit score (copy first so the shared array keeps its order)
+  const topCandidateApps = [...applications]
     .sort((a, b) => b.fitScore - a.fitScore)
     .slice(0, 5)
     .map(app => ({
@@ -280,9 +280,9 @@ export default function Dashboard() {
           </motion.div>
         </div>
 
-        {/* Bottom Grid - AI Triage and Roles */}
+        {/* Bottom Grid: top candidates and roles */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-          {/* AI Triage Queue */}
+          {/* Top candidates by fit */}
           <motion.div
             className="lg:col-span-2"
             initial={{ opacity: 0, x: -20 }}
@@ -296,7 +296,7 @@ export default function Dashboard() {
                     <Sparkles className="w-4 h-4 snoonu-red" />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-primary">AI Triage Queue</h2>
+                    <h2 className="text-base font-bold text-primary">Top candidates by fit</h2>
                     <p className="text-xs text-muted">Top candidates across all roles</p>
                   </div>
                 </div>
@@ -326,7 +326,7 @@ export default function Dashboard() {
                       </div>
                       <p className="text-xs text-muted truncate">{app.role.title}</p>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {app.aiReasons.slice(0, 2).map((reason, i) => (
+                        {app.fitReasons.slice(0, 2).map((reason, i) => (
                           <span key={i} className="text-xs px-1.5 py-0.5 rounded-full bg-tertiary text-secondary">
                             {reason}
                           </span>

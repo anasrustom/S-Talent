@@ -4,7 +4,8 @@ import type {
   Candidate, 
   Application, 
   Interview, 
-  ChallengeTemplate 
+  ChallengeTemplate,
+  ScoreLine
 } from './types';
 
 // Organizations
@@ -94,7 +95,8 @@ export const roles: Role[] = [
     location: 'Education City, Doha',
     deadline: '2026-02-28',
     status: 'open',
-    requirements: ['Event Management', 'Arabic', 'Sustainability Interest'],
+    requirements: ['Event Management', 'Sustainability Interest', 'Volunteer Coordination'],
+    languages: ['Arabic', 'English'],
     description: 'Support the annual Qatar Sustainability Summit logistics and attendee experience',
     applicantsCount: 89,
     qualityScore: 82,
@@ -110,6 +112,7 @@ export const roles: Role[] = [
     deadline: '2026-04-01',
     status: 'open',
     requirements: ['Event Planning', 'Project Management', 'Communication'],
+    languages: ['Arabic', 'English'],
     description: 'Full-time graduate role managing corporate and public events',
     applicantsCount: 34,
     qualityScore: 85,
@@ -154,7 +157,8 @@ export const roles: Role[] = [
     location: 'Education City, Doha',
     deadline: '2026-02-20',
     status: 'open',
-    requirements: ['Teaching', 'Mentoring', 'English/Arabic'],
+    requirements: ['Teaching', 'Mentoring', 'Curriculum Design'],
+    languages: ['Arabic', 'English'],
     description: 'Support educational outreach programs for local schools',
     applicantsCount: 41,
     qualityScore: 88,
@@ -171,6 +175,7 @@ export const candidates: Candidate[] = [
     university: 'Qatar University',
     major: 'Computer Science',
     graduationDate: '2026-06-01',
+    gpa: 3.86,
     languages: ['Arabic', 'English'],
     skills: ['Python', 'Machine Learning', 'Data Analysis', 'Research'],
     availability: 'immediate',
@@ -195,8 +200,9 @@ export const candidates: Candidate[] = [
     university: 'Carnegie Mellon Qatar',
     major: 'Business Administration',
     graduationDate: '2026-05-15',
+    gpa: 3.52,
     languages: ['Arabic', 'English', 'French'],
-    skills: ['Event Management', 'Project Coordination', 'Leadership', 'Sustainability'],
+    skills: ['Event Management', 'Project Management', 'Leadership', 'Sustainability'],
     availability: 'flexible',
     workPermit: true,
     snoonuPlus: false,
@@ -218,6 +224,7 @@ export const candidates: Candidate[] = [
     university: 'Georgetown Qatar',
     major: 'International Relations',
     graduationDate: '2027-06-01',
+    gpa: 3.71,
     languages: ['Arabic', 'English', 'Urdu'],
     skills: ['Event Planning', 'Communication', 'Volunteer Coordination', 'Social Media'],
     availability: 'flexible',
@@ -240,6 +247,7 @@ export const candidates: Candidate[] = [
     university: 'Texas A&M Qatar',
     major: 'Mechanical Engineering',
     graduationDate: '2026-12-15',
+    gpa: 3.24,
     languages: ['Arabic', 'English'],
     skills: ['CAD', 'Problem Solving', 'Teamwork', 'Sustainability'],
     availability: 'limited',
@@ -260,6 +268,7 @@ export const candidates: Candidate[] = [
     university: 'Northwestern Qatar',
     major: 'Journalism',
     graduationDate: '2026-05-20',
+    gpa: 3.48,
     languages: ['Arabic', 'English'],
     skills: ['Content Creation', 'Social Media', 'Writing', 'Photography', 'Video Editing'],
     availability: 'immediate',
@@ -284,6 +293,7 @@ export const candidates: Candidate[] = [
     university: 'Qatar University',
     major: 'Software Engineering',
     graduationDate: '2026-06-01',
+    gpa: 3.67,
     languages: ['Arabic', 'English'],
     skills: ['React', 'Node.js', 'TypeScript', 'MongoDB', 'AWS'],
     availability: 'immediate',
@@ -307,6 +317,7 @@ export const candidates: Candidate[] = [
     university: 'Education City',
     major: 'Education',
     graduationDate: '2027-06-01',
+    gpa: 3.59,
     languages: ['Arabic', 'English'],
     skills: ['Teaching', 'Mentoring', 'Curriculum Design', 'Child Development'],
     availability: 'flexible',
@@ -329,6 +340,7 @@ export const candidates: Candidate[] = [
     university: 'Carnegie Mellon Qatar',
     major: 'Computer Science',
     graduationDate: '2026-05-15',
+    gpa: 3.91,
     languages: ['Arabic', 'English'],
     skills: ['Python', 'Java', 'Algorithms', 'System Design', 'Git'],
     availability: 'immediate',
@@ -350,6 +362,7 @@ export const candidates: Candidate[] = [
     university: 'Georgetown Qatar',
     major: 'Marketing',
     graduationDate: '2026-12-01',
+    gpa: 3.44,
     languages: ['Arabic', 'English', 'Spanish'],
     skills: ['Digital Marketing', 'Brand Strategy', 'Analytics', 'SEO', 'Content Marketing'],
     availability: 'flexible',
@@ -373,6 +386,7 @@ export const candidates: Candidate[] = [
     university: 'Texas A&M Qatar',
     major: 'Electrical Engineering',
     graduationDate: '2027-05-15',
+    gpa: 3.18,
     languages: ['Arabic', 'English'],
     skills: ['Circuit Design', 'Programming', 'IoT', 'Robotics'],
     availability: 'limited',
@@ -388,69 +402,121 @@ export const candidates: Candidate[] = [
   },
 ];
 
-// Helper function to calculate fit score based on skills and availability
-function calculateFitScore(candidate: Candidate, role: Role): number {
-  let score = 50; // base score
-  
-  // Skills match
-  const matchingSkills = candidate.skills.filter(skill => 
-    role.requirements.some(req => req.toLowerCase().includes(skill.toLowerCase()))
-  );
-  score += matchingSkills.length * 10;
-  
-  // Availability boost
-  if (candidate.availability === 'immediate') score += 15;
-  if (candidate.availability === 'flexible') score += 10;
-  
-  // Snoonu Plus boost
-  if (candidate.snoonuPlus) score += 5;
-  
-  // Language match (Arabic preferred)
-  if (candidate.languages.includes('Arabic')) score += 10;
-  
-  // Cap at 100
-  return Math.min(100, score);
+// Transparent, deterministic fit score. No model, no randomness:
+// every point comes from a rule below and is listed in the breakdown.
+const BASE_POINTS = 50;
+const POINTS_PER_SKILL = 10;
+const AVAILABILITY_POINTS: Record<Candidate['availability'], number> = {
+  immediate: 15,
+  flexible: 10,
+  limited: 0,
+};
+const LANGUAGE_POINTS = 10;
+
+function skillMatches(skill: string, requirement: string): boolean {
+  const s = skill.toLowerCase();
+  const r = requirement.toLowerCase();
+  return r.includes(s) || s.includes(r);
 }
 
-// Helper function to generate AI reasons
-function generateAIReasons(candidate: Candidate, role: Role): string[] {
-  const reasons: string[] = [];
-  
-  const matchingSkills = candidate.skills.filter(skill => 
-    role.requirements.some(req => req.toLowerCase().includes(skill.toLowerCase()))
+function matchedRequirements(candidate: Candidate, role: Role): string[] {
+  return role.requirements.filter(req =>
+    candidate.skills.some(skill => skillMatches(skill, req))
   );
-  
-  if (matchingSkills.length > 0) {
-    reasons.push('Relevant projects');
+}
+
+function speaksRequiredLanguages(candidate: Candidate, role: Role): boolean {
+  return (role.languages ?? []).every(lang => candidate.languages.includes(lang));
+}
+
+// Builds the itemised score. The points always sum to the fit score.
+function buildScoreBreakdown(candidate: Candidate, role: Role): ScoreLine[] {
+  const lines: ScoreLine[] = [{ label: 'Base score for a complete application', points: BASE_POINTS }];
+
+  const matched = matchedRequirements(candidate, role);
+  role.requirements.forEach(req => {
+    lines.push(matched.includes(req)
+      ? { label: `${req} matched`, points: POINTS_PER_SKILL }
+      : { label: `${req} not shown`, points: 0 });
+  });
+
+  const availabilityLabel = {
+    immediate: 'Available immediately',
+    flexible: 'Flexible availability',
+    limited: 'Limited availability',
+  }[candidate.availability];
+  lines.push({ label: availabilityLabel, points: AVAILABILITY_POINTS[candidate.availability] });
+
+  // Languages only count when the role asks for them
+  if (role.languages && role.languages.length > 0) {
+    const required = role.languages.join(' + ');
+    lines.push(speaksRequiredLanguages(candidate, role)
+      ? { label: `Speaks ${required} (required)`, points: LANGUAGE_POINTS }
+      : { label: `Missing a required language (${required})`, points: 0 });
   }
-  
+
+  const raw = lines.reduce((sum, line) => sum + line.points, 0);
+  if (raw > 100) {
+    lines.push({ label: 'Capped at 100', points: 100 - raw });
+  }
+
+  return lines;
+}
+
+// Short reason chips, all derived from the same data as the score
+function buildFitReasons(candidate: Candidate, role: Role): string[] {
+  const reasons: string[] = [];
+
+  const matched = matchedRequirements(candidate, role);
+  if (matched.length > 0) {
+    reasons.push(`${matched.length}/${role.requirements.length} required skills`);
+  }
+
   if (candidate.availability === 'immediate') {
-    reasons.push('Matches availability');
+    reasons.push('Available immediately');
   }
-  
-  if (candidate.languages.includes('Arabic') && candidate.languages.includes('English')) {
-    reasons.push('Arabic + English');
+
+  if (role.languages && role.languages.length > 0 && speaksRequiredLanguages(candidate, role)) {
+    reasons.push(role.languages.join(' + '));
   }
-  
-  if (candidate.portfolio && candidate.portfolio.projects.length > 0) {
-    reasons.push('Strong portfolio');
+
+  const projects = candidate.portfolio?.projects.length ?? 0;
+  if (projects > 0) {
+    reasons.push(`${projects} portfolio project${projects > 1 ? 's' : ''}`);
   }
-  
-  if (candidate.portfolio && candidate.portfolio.certificates.length > 0) {
-    reasons.push('Certified skills');
+
+  const certificates = candidate.portfolio?.certificates.length ?? 0;
+  if (certificates > 0) {
+    reasons.push(`${certificates} certificate${certificates > 1 ? 's' : ''}`);
   }
-  
+
+  // Snoonu Plus is shown as a badge and chip only, it adds no points
   if (candidate.snoonuPlus) {
-    reasons.push('Snoonu Plus member');
+    return [...reasons.slice(0, 3), 'Snoonu Plus member'];
   }
-  
-  // Add some variety
-  const randomReasons = ['Prior volunteering', 'Cultural fit', 'Quick learner', 'Team player'];
-  if (Math.random() > 0.5) {
-    reasons.push(randomReasons[Math.floor(Math.random() * randomReasons.length)]);
-  }
-  
   return reasons.slice(0, 4);
+}
+
+function recommendationFor(fitScore: number): Application['recommendation'] {
+  return fitScore > 75 ? 'accept' : fitScore > 60 ? 'hold' : 'reject';
+}
+
+type ApplicationFields = Pick<Application, 'id' | 'stage' | 'appliedAt' | 'notes' | 'skillProofSubmission'>;
+
+function buildApplication(candidate: Candidate, role: Role, fields: ApplicationFields): Application {
+  const scoreBreakdown = buildScoreBreakdown(candidate, role);
+  const fitScore = scoreBreakdown.reduce((sum, line) => sum + line.points, 0);
+
+  return {
+    ...fields,
+    roleId: role.id,
+    candidateId: candidate.id,
+    fitScore,
+    scoreBreakdown,
+    fitReasons: buildFitReasons(candidate, role),
+    recommendation: recommendationFor(fitScore),
+    confidence: Math.floor(fitScore * 0.9),
+  };
 }
 
 // Generate applications
@@ -458,133 +524,73 @@ export const applications: Application[] = [];
 
 // Role 1 applications (AI Lab Intern)
 [0, 1, 5, 7].forEach((candIndex, i) => {
-  const candidate = candidates[candIndex];
-  const role = roles[0];
-  const fitScore = calculateFitScore(candidate, role);
-  
-  applications.push({
+  applications.push(buildApplication(candidates[candIndex], roles[0], {
     id: `app-1-${i + 1}`,
-    roleId: role.id,
-    candidateId: candidate.id,
     stage: i === 0 ? 'shortlisted' : i === 1 ? 'reviewed' : 'new',
     appliedAt: `2026-01-${10 + i}T${9 + i}:00:00Z`,
-    fitScore,
-    aiReasons: generateAIReasons(candidate, role),
-    aiRecommendation: fitScore > 75 ? 'accept' : fitScore > 60 ? 'hold' : 'reject',
-    aiConfidence: Math.floor(fitScore * 0.9),
     notes: [],
-  });
+  }));
 });
 
 // Role 2 applications (Sustainability Volunteer)
 [1, 2, 3, 6].forEach((candIndex, i) => {
-  const candidate = candidates[candIndex];
-  const role = roles[1];
-  const fitScore = calculateFitScore(candidate, role);
-  
-  applications.push({
+  applications.push(buildApplication(candidates[candIndex], roles[1], {
     id: `app-2-${i + 1}`,
-    roleId: role.id,
-    candidateId: candidate.id,
     stage: i === 0 ? 'interview' : i === 1 ? 'shortlisted' : 'reviewed',
     appliedAt: `2026-01-${8 + i}T${10 + i}:00:00Z`,
-    fitScore,
-    aiReasons: generateAIReasons(candidate, role),
-    aiRecommendation: fitScore > 75 ? 'accept' : fitScore > 60 ? 'hold' : 'reject',
-    aiConfidence: Math.floor(fitScore * 0.9),
     notes: i === 0 ? [{
       text: 'Excellent communication skills shown in interview',
       author: 'Sarah (Recruiter)',
       createdAt: '2026-01-14T15:00:00Z',
     }] : [],
-  });
+  }));
 });
 
 // Role 3 applications (Event Coordinator)
 [1, 2, 4].forEach((candIndex, i) => {
-  const candidate = candidates[candIndex];
-  const role = roles[2];
-  const fitScore = calculateFitScore(candidate, role);
-  
-  applications.push({
+  applications.push(buildApplication(candidates[candIndex], roles[2], {
     id: `app-3-${i + 1}`,
-    roleId: role.id,
-    candidateId: candidate.id,
     stage: i === 0 ? 'shortlisted' : 'new',
     appliedAt: `2026-01-${12 + i}T${11 + i}:00:00Z`,
-    fitScore,
-    aiReasons: generateAIReasons(candidate, role),
-    aiRecommendation: fitScore > 75 ? 'accept' : fitScore > 60 ? 'hold' : 'reject',
-    aiConfidence: Math.floor(fitScore * 0.9),
     notes: [],
-  });
+  }));
 });
 
 // Role 4 applications (Software Intern)
-[5, 7, 0].forEach((candIndex, i) => {
-  const candidate = candidates[candIndex];
-  const role = roles[3];
-  const fitScore = calculateFitScore(candidate, role);
-  
-  applications.push({
+[5, 7, 0, 9].forEach((candIndex, i) => {
+  applications.push(buildApplication(candidates[candIndex], roles[3], {
     id: `app-4-${i + 1}`,
-    roleId: role.id,
-    candidateId: candidate.id,
     stage: i === 0 ? 'reviewed' : 'new',
     appliedAt: `2026-01-${13 + i}T${9 + i}:00:00Z`,
-    fitScore,
-    aiReasons: generateAIReasons(candidate, role),
-    aiRecommendation: fitScore > 75 ? 'accept' : fitScore > 60 ? 'hold' : 'reject',
-    aiConfidence: Math.floor(fitScore * 0.9),
     notes: [],
-  });
+  }));
 });
 
 // Role 5 applications (Marketing Intern)
 [4, 8].forEach((candIndex, i) => {
-  const candidate = candidates[candIndex];
-  const role = roles[4];
-  const fitScore = calculateFitScore(candidate, role);
-  
-  applications.push({
+  applications.push(buildApplication(candidates[candIndex], roles[4], {
     id: `app-5-${i + 1}`,
-    roleId: role.id,
-    candidateId: candidate.id,
     stage: i === 0 ? 'shortlisted' : 'new',
     appliedAt: `2026-01-${14 + i}T${10 + i}:00:00Z`,
-    fitScore,
-    aiReasons: generateAIReasons(candidate, role),
-    aiRecommendation: fitScore > 75 ? 'accept' : fitScore > 60 ? 'hold' : 'reject',
-    aiConfidence: Math.floor(fitScore * 0.9),
     notes: [],
     skillProofSubmission: i === 0 ? {
       challengeId: 'tpl-3',
       submittedAt: '2026-01-15T16:00:00Z',
       content: 'Partnership proposal focusing on sustainable event practices...',
       score: 88,
-      aiEvaluation: 'Strong persuasiveness and clear value proposition. Excellent use of local market insights.',
+      evaluation: 'Strong persuasiveness and clear value proposition. Excellent use of local market insights.',
     } : undefined,
-  });
+  }));
 });
 
 // Role 6 applications (Education Volunteer)
 [6, 2].forEach((candIndex, i) => {
-  const candidate = candidates[candIndex];
-  const role = roles[5];
-  const fitScore = calculateFitScore(candidate, role);
-  
-  applications.push({
+  applications.push(buildApplication(candidates[candIndex], roles[5], {
     id: `app-6-${i + 1}`,
-    roleId: role.id,
-    candidateId: candidate.id,
     stage: i === 0 ? 'shortlisted' : 'reviewed',
     appliedAt: `2026-01-${14 + i}T${11 + i}:00:00Z`,
-    fitScore,
-    aiReasons: generateAIReasons(candidate, role),
-    aiRecommendation: fitScore > 75 ? 'accept' : fitScore > 60 ? 'hold' : 'reject',
-    aiConfidence: Math.floor(fitScore * 0.9),
     notes: [],
-  });
+  }));
 });
 
 // Interviews

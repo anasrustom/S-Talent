@@ -31,6 +31,7 @@ export type Role = {
   deadline: string;
   status: RoleStatus;
   requirements: string[];
+  languages?: string[]; // languages the role requires, if any
   description: string;
   applicantsCount: number;
   qualityScore: number; // 0-100
@@ -46,6 +47,7 @@ export type Candidate = {
   university: string;
   major: string;
   graduationDate: string;
+  gpa: number;
   languages: string[];
   skills: string[];
   availability: 'immediate' | 'flexible' | 'limited';
@@ -59,23 +61,30 @@ export type Candidate = {
   createdAt: string;
 };
 
+// One line of the explainable fit score: every point has a reason
+export type ScoreLine = {
+  label: string;
+  points: number;
+};
+
 export type Application = {
   id: string;
   roleId: string;
   candidateId: string;
   stage: ApplicationStage;
   appliedAt: string;
-  fitScore: number; // 0-100
-  aiReasons: string[];
-  aiRecommendation: 'accept' | 'reject' | 'hold';
-  aiConfidence: number; // 0-100
+  fitScore: number; // 0-100, always equals the sum of scoreBreakdown
+  scoreBreakdown: ScoreLine[];
+  fitReasons: string[];
+  recommendation: 'accept' | 'reject' | 'hold';
+  confidence: number; // 0-100
   notes: { text: string; author: string; createdAt: string }[];
   skillProofSubmission?: {
     challengeId: string;
     submittedAt: string;
     content: string;
     score?: number;
-    aiEvaluation?: string;
+    evaluation?: string;
   };
 };
 
