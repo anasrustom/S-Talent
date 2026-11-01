@@ -2,14 +2,13 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors, useDroppable, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useState, useMemo } from 'react';
 import { applications, candidates, roles } from '@/lib/data/mock-data';
-import type { ApplicationStage } from '@/lib/data/types';
-import { FitScoreRing } from '@/components/ui/common';
+import type { ApplicationStage, Candidate, Role } from '@/lib/data/types';
 import { useToast } from '@/components/ui/Toast';
 import { TrendingUp } from 'lucide-react';
 
@@ -25,8 +24,8 @@ const stages: { id: ApplicationStage; label: string; color: string }[] = [
 type EnrichedApp = {
   id: string;
   stage: ApplicationStage;
-  candidate: any;
-  role: any;
+  candidate: Candidate;
+  role: Role;
   fitScore: number;
 };
 
@@ -72,28 +71,34 @@ function CandidateCard({ app }: { app: EnrichedApp }) {
   );
 }
 
-function PipelineColumn({ stage, apps }: { stage: typeof stages[0]; apps: EnrichedApp[] }) {
-  const conversionRate = stage.id !== 'new' ? 
-    Math.floor(Math.random() * 30 + 50) : 100;
+// Share of candidates who reached the previous stage and moved on to this one
+type StageConversion = { rate: number; fromLabel: string } | null;
+
+function PipelineColumn({ stage, apps, conversion }: { stage: typeof stages[0]; apps: EnrichedApp[]; conversion: StageConversion }) {
+  // The whole column is a drop target, so empty stages accept drops too
+  const { setNodeRef, isOver } = useDroppable({ id: stage.id });
 
   return (
     <div className="flex-1 min-w-[280px]">
-      <div className={`rounded-xl ${stage.color} p-4 h-full flex flex-col`}>
+      <div
+        ref={setNodeRef}
+        className={`rounded-xl ${stage.color} p-4 h-full flex flex-col transition-shadow ${isOver ? 'ring-2 ring-[var(--snoonu-red)]' : ''}`}
+      >
         {/* Column Header */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-primary">{stage.label}</h3>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-primary">{apps.length}</span>
-              {stage.id !== 'new' && (
-                <span className="text-xs text-muted">({conversionRate}%)</span>
+              {conversion && (
+                <span className="text-xs text-muted">({conversion.rate}%)</span>
               )}
             </div>
           </div>
-          {stage.id !== 'new' && (
-            <div className="flex items-center gap-1 text-xs text-success">
+          {conversion && (
+            <div className="flex items-center gap-1 text-xs text-muted">
               <TrendingUp className="w-3 h-3" />
-              <span>+{Math.floor(Math.random() * 20 + 5)}% vs last week</span>
+              <span>{conversion.rate}% moved on from {conversion.fromLabel}</span>
             </div>
           )}
         </div>
@@ -170,6 +175,21 @@ export default function PipelinePage() {
     });
     
     return grouped;
+  }, [enrichedApps]);
+
+  // Funnel conversion from the live board: candidates at or past each stage
+  const conversions = useMemo(() => {
+    const funnel = stages.filter(s => s.id !== 'rejected');
+    const reached = funnel.map((_, i) =>
+      enrichedApps.filter(app => funnel.findIndex(s => s.id === app.stage) >= i).length
+    );
+    const result: Partial<Record<ApplicationStage, StageConversion>> = {};
+    funnel.forEach((stage, i) => {
+      result[stage.id] = i > 0 && reached[i - 1] > 0
+        ? { rate: Math.round((reached[i] / reached[i - 1]) * 100), fromLabel: funnel[i - 1].label }
+        : null;
+    });
+    return result;
   }, [enrichedApps]);
 
   function handleDragStart(event: DragStartEvent) {
@@ -255,6 +275,7 @@ export default function PipelinePage() {
                 key={stage.id}
                 stage={stage}
                 apps={appsByStage[stage.id] || []}
+                conversion={conversions[stage.id] ?? null}
               />
             ))}
           </motion.div>
@@ -292,7 +313,7 @@ export default function PipelinePage() {
             return (
               <div key={stage.id} className="card p-4">
                 <p className="text-xs text-muted mb-1">{stage.label} Avg. Score</p>
-                <p className="text-2xl font-bold text-primary">{avgFitScore || '—'}</p>
+                <p className="text-2xl font-bold text-primary">{avgFitScore || '-'}</p>
               </div>
             );
           })}
