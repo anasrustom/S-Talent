@@ -278,12 +278,13 @@ export default function DesignChallengePage() {
                   <div className="flex items-start gap-3">
                     <Lightbulb className="w-5 h-5 text-info flex-shrink-0 mt-1" />
                     <div>
-                      <h3 className="font-bold text-primary mb-2">Evaluation Criteria</h3>
+                      <h3 className="font-bold text-primary mb-2">How it is scored (20 points each)</h3>
                       <ul className="space-y-1 text-sm text-secondary">
-                        <li>• Identification of critical UX issues</li>
-                        <li>• Specificity and actionability of suggestions</li>
-                        <li>• Understanding of design principles</li>
-                        <li>• Consideration of accessibility and inclusive design</li>
+                        <li>• Names three separate issues</li>
+                        <li>• Issues are concrete UI problems</li>
+                        <li>• Proposes concrete changes</li>
+                        <li>• Covers accessibility specifics</li>
+                        <li>• Depth of critique</li>
                       </ul>
                     </div>
                   </div>
