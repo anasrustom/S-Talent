@@ -361,6 +361,11 @@ body {
   width: 100%;
 }
 
+/* Leaves room for a leading icon; unlayered .input padding would otherwise beat the pl-10 utility */
+.input.pl-10 {
+  padding-left: 2.5rem;
+}
+
 .input:hover {
   border-color: var(--border-hover);
 }

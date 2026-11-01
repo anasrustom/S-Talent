@@ -151,7 +151,7 @@ export default function ApplicantsPage() {
           <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
             <button
               onClick={() => setUniversityFilter('all')}
-              className={`btn btn-sm whitespace-nowrap ${universityFilter === 'all' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`btn btn-sm shrink-0 whitespace-nowrap ${universityFilter === 'all' ? 'btn-primary' : 'btn-ghost'}`}
             >
               All Universities
             </button>
@@ -159,7 +159,7 @@ export default function ApplicantsPage() {
               <button
                 key={uni}
                 onClick={() => setUniversityFilter(uni)}
-                className={`btn btn-sm whitespace-nowrap ${universityFilter === uni ? 'btn-primary' : 'btn-ghost'}`}
+                className={`btn btn-sm shrink-0 whitespace-nowrap ${universityFilter === uni ? 'btn-primary' : 'btn-ghost'}`}
               >
                 {uni}
               </button>
