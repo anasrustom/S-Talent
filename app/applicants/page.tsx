@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Sparkles, Users, Grid, List, Download, Send, CheckCircle2, X, Calendar } from 'lucide-react';
+import { Search, Filter, Sparkles, ArrowDownWideNarrow, Users, Grid, List, Download, Send, CheckCircle2, X, Calendar } from 'lucide-react';
 import { Card, StatusPill, Button, FitScoreRing, SkillChip } from '@/components/ui/common';
 import { applications, candidates, roles } from '@/lib/data/mock-data';
 import { useState, useMemo } from 'react';
@@ -15,7 +15,6 @@ export default function ApplicantsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [rankByFit, setRankByFit] = useState(false);
-  const [isScoring, setIsScoring] = useState(false);
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [universityFilter, setUniversityFilter] = useState<string>('all');
   const { addToast } = useToast();
@@ -48,18 +47,15 @@ export default function ApplicantsPage() {
   // Get unique universities
   const universities = Array.from(new Set(candidates.map(c => c.university)));
 
+  // Scores are already computed, so ranking is just a sort
   const handleRankToggle = () => {
-    setIsScoring(true);
-    setTimeout(() => {
-      setRankByFit(!rankByFit);
-      setIsScoring(false);
-      addToast(
-        rankByFit 
-          ? 'Ranking by fit turned off'
-          : 'Ranked by fit score: highest fit first',
-        'success'
-      );
-    }, 1500);
+    setRankByFit(!rankByFit);
+    addToast(
+      rankByFit
+        ? 'Ranking by fit turned off'
+        : 'Ranked by fit score: highest fit first',
+      'success'
+    );
   };
 
   const toggleSelection = (appId: string) => {
@@ -138,12 +134,11 @@ export default function ApplicantsPage() {
                   : 'btn-secondary'
               }`}
               onClick={handleRankToggle}
-              disabled={isScoring}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Sparkles className={`w-5 h-5 ${isScoring ? 'animate-spin' : ''}`} />
-              {isScoring ? 'Scoring candidates...' : rankByFit ? 'Ranked by fit score' : 'Rank by fit'}
+              <ArrowDownWideNarrow className="w-5 h-5" />
+              {rankByFit ? 'Ranked by fit score' : 'Rank by fit'}
             </motion.button>
 
             <button className="btn btn-ghost">
@@ -237,30 +232,6 @@ export default function ApplicantsPage() {
           )}
         </AnimatePresence>
 
-        {/* Loading State */}
-        <AnimatePresence>
-          {isScoring && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center"
-            >
-              <Card className="p-8 text-center">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                  className="w-16 h-16 bg-snoonu-red/10 rounded-full flex items-center justify-center mx-auto mb-4"
-                >
-                  <Sparkles className="w-8 h-8 snoonu-red" />
-                </motion.div>
-                <p className="text-lg font-semibold text-primary">Scoring candidates...</p>
-                <p className="text-sm text-muted mt-2">Ranking by fit score and relevance</p>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Applicants List */}
         <div className={`grid ${viewMode === 'card' ? 'grid-cols-1 lg:grid-cols-2 gap-4' : 'gap-2'}`}>
           {sortedApps.map((app, index) => (
@@ -268,7 +239,7 @@ export default function ApplicantsPage() {
               key={app.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: isScoring ? 0 : index * 0.03 }}
+              transition={{ delay: index * 0.03 }}
               layout
             >
               {viewMode === 'card' ? (
