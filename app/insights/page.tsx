@@ -2,21 +2,66 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { motion } from 'framer-motion';
-import { TrendingUp, Users, Clock, Target, Calendar } from 'lucide-react';
+import { Users, Target, Calendar, Gauge } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { applications, roles, candidates } from '@/lib/data/mock-data';
+import type { ApplicationStage, RoleType } from '@/lib/data/types';
 
-const applicationTrendData = [
-  { name: 'Week 1', applications: 12 },
-  { name: 'Week 2', applications: 19 },
-  { name: 'Week 3', applications: 15 },
-  { name: 'Week 4', applications: 28 },
-];
+// Every figure on this page is counted from the demo data in lib/data
 
-const roleTypeData = [
-  { name: 'Internship', value: 120 },
-  { name: 'Volunteer', value: 85 },
-  { name: 'Graduate', value: 67 },
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// Applications per day applied, in UTC so server and browser agree
+const applicationTrendData = Object.entries(
+  applications.reduce<Record<string, number>>((days, app) => {
+    const day = app.appliedAt.slice(0, 10);
+    days[day] = (days[day] || 0) + 1;
+    return days;
+  }, {})
+)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([day, count]) => {
+    const date = new Date(`${day}T00:00:00Z`);
+    return { name: `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`, applications: count };
+  });
+
+const ROLE_TYPE_LABELS: Record<RoleType, string> = {
+  internship: 'Internship',
+  volunteer: 'Volunteer',
+  graduate: 'Graduate',
+};
+
+const roleTypeData = (Object.keys(ROLE_TYPE_LABELS) as RoleType[]).map(type => ({
+  name: ROLE_TYPE_LABELS[type],
+  value: applications.filter(app => roles.find(r => r.id === app.roleId)?.type === type).length,
+}));
+
+const PAST_SHORTLIST: ApplicationStage[] = ['shortlisted', 'interview', 'offer', 'hired'];
+const shortlistedOrLater = applications.filter(app => PAST_SHORTLIST.includes(app.stage)).length;
+const avgFitScore = applications.length > 0
+  ? Math.round(applications.reduce((sum, app) => sum + app.fitScore, 0) / applications.length)
+  : 0;
+const openRoles = roles.filter(r => r.status === 'open').length;
+const percentOf = (count: number) => (applications.length > 0 ? Math.round((count / applications.length) * 100) : 0);
+
+// Universities of the candidates behind each application, most applications first
+const topSources = Object.entries(
+  applications.reduce<Record<string, number>>((sources, app) => {
+    const university = candidates.find(c => c.id === app.candidateId)?.university ?? 'Unknown';
+    sources[university] = (sources[university] || 0) + 1;
+    return sources;
+  }, {})
+)
+  .sort(([nameA, a], [nameB, b]) => b - a || nameA.localeCompare(nameB))
+  .slice(0, 3)
+  .map(([name, count]) => ({ name, count, percentage: percentOf(count) }));
+
+const metrics = [
+  { label: 'Total Applications', value: String(applications.length), note: `Across ${roles.length} roles`, icon: Users, tint: 'bg-info/10', text: 'text-info' },
+  { label: 'Avg. Fit Score', value: String(avgFitScore), note: 'Out of 100, all applications', icon: Gauge, tint: 'bg-success/10', text: 'text-success' },
+  { label: 'Shortlisted or Later', value: `${percentOf(shortlistedOrLater)}%`, note: `${shortlistedOrLater} of ${applications.length} applications`, icon: Target, tint: 'bg-warning/10', text: 'text-warning' },
+  { label: 'Open Roles', value: String(openRoles), note: `${roles.length} roles in total`, icon: Calendar, tint: 'bg-error/10', text: 'text-error' },
 ];
 
 export default function InsightsPage() {
@@ -30,17 +75,12 @@ export default function InsightsPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Insights</h1>
-          <p className="text-secondary">Analytics and performance metrics</p>
+          <p className="text-secondary">Counted from the demo applications</p>
         </motion.div>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {[
-            { label: 'Total Applications', value: '272', change: '+18%', icon: Users, color: 'info' },
-            { label: 'Avg. Time to Hire', value: '12 days', change: '-3 days', icon: Clock, color: 'success' },
-            { label: 'Acceptance Rate', value: '73%', change: '+5%', icon: Target, color: 'warning' },
-            { label: 'Active Roles', value: '6', change: '+2', icon: Calendar, color: 'error' },
-          ].map((metric, index) => {
+          {metrics.map((metric, index) => {
             const Icon = metric.icon;
             return (
               <motion.div
@@ -51,16 +91,13 @@ export default function InsightsPage() {
               >
                 <Card className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${metric.color}/10`}>
-                      <Icon className={`w-6 h-6 text-${metric.color}`} />
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${metric.tint}`}>
+                      <Icon className={`w-6 h-6 ${metric.text}`} />
                     </div>
                   </div>
                   <p className="text-sm text-muted mb-1">{metric.label}</p>
                   <p className="text-3xl font-bold text-primary mb-2">{metric.value}</p>
-                  <div className="flex items-center gap-1 text-sm text-success">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>{metric.change}</span>
-                  </div>
+                  <p className="text-sm text-muted">{metric.note}</p>
                 </Card>
               </motion.div>
             );
@@ -76,12 +113,12 @@ export default function InsightsPage() {
             transition={{ delay: 0.4 }}
           >
             <Card className="p-6">
-              <h3 className="text-lg font-bold text-primary mb-4">Application Trend</h3>
+              <h3 className="text-lg font-bold text-primary mb-4">Applications by Date Applied</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={applicationTrendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="name" stroke="var(--foreground-muted)" />
-                  <YAxis stroke="var(--foreground-muted)" />
+                  <YAxis stroke="var(--foreground-muted)" allowDecimals={false} />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'var(--card)', 
@@ -102,12 +139,12 @@ export default function InsightsPage() {
             transition={{ delay: 0.5 }}
           >
             <Card className="p-6">
-              <h3 className="text-lg font-bold text-primary mb-4">Applications by Type</h3>
+              <h3 className="text-lg font-bold text-primary mb-4">Applications by Role Type</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={roleTypeData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="name" stroke="var(--foreground-muted)" />
-                  <YAxis stroke="var(--foreground-muted)" />
+                  <YAxis stroke="var(--foreground-muted)" allowDecimals={false} />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'var(--card)', 
@@ -131,12 +168,9 @@ export default function InsightsPage() {
         >
           <Card className="p-6">
             <h3 className="text-lg font-bold text-primary mb-4">Top Talent Sources</h3>
+            <p className="text-sm text-muted -mt-3 mb-4">Applications by the candidate&apos;s university</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { name: 'Qatar University', count: 87, percentage: 32 },
-                { name: 'Carnegie Mellon Qatar', count: 65, percentage: 24 },
-                { name: 'Georgetown Qatar', count: 48, percentage: 18 },
-              ].map((uni, index) => (
+              {topSources.map((uni, index) => (
                 <div key={uni.name} className="p-4 rounded-lg bg-secondary">
                   <p className="font-semibold text-primary mb-2">{uni.name}</p>
                   <div className="flex items-center gap-3">
@@ -147,7 +181,7 @@ export default function InsightsPage() {
                     <motion.div
                       className="h-full bg-snoonu-red"
                       initial={{ width: 0 }}
-                      animate={{ width: `${uni.percentage * 3}%` }}
+                      animate={{ width: `${uni.percentage}%` }}
                       transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
                     />
                   </div>
