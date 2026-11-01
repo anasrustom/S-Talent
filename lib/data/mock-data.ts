@@ -506,6 +506,11 @@ function buildApplication(candidate: Candidate, role: Role, fields: ApplicationF
   };
 }
 
+// ISO timestamp in January 2026, zero padded so every browser parses it
+function januaryAt(day: number, hour: number): string {
+  return `2026-01-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:00:00Z`;
+}
+
 // Generate applications
 export const applications: Application[] = [];
 
@@ -514,7 +519,7 @@ export const applications: Application[] = [];
   applications.push(buildApplication(candidates[candIndex], roles[0], {
     id: `app-1-${i + 1}`,
     stage: i === 0 ? 'shortlisted' : i === 1 ? 'reviewed' : 'new',
-    appliedAt: `2026-01-${10 + i}T${9 + i}:00:00Z`,
+    appliedAt: januaryAt(10 + i, 9 + i),
     notes: [],
   }));
 });
@@ -524,7 +529,7 @@ export const applications: Application[] = [];
   applications.push(buildApplication(candidates[candIndex], roles[1], {
     id: `app-2-${i + 1}`,
     stage: i === 0 ? 'interview' : i === 1 ? 'shortlisted' : 'reviewed',
-    appliedAt: `2026-01-${8 + i}T${10 + i}:00:00Z`,
+    appliedAt: januaryAt(8 + i, 10 + i),
     notes: i === 0 ? [{
       text: 'Excellent communication skills shown in interview',
       author: 'Sarah (Recruiter)',
@@ -538,7 +543,7 @@ export const applications: Application[] = [];
   applications.push(buildApplication(candidates[candIndex], roles[2], {
     id: `app-3-${i + 1}`,
     stage: i === 0 ? 'shortlisted' : 'new',
-    appliedAt: `2026-01-${12 + i}T${11 + i}:00:00Z`,
+    appliedAt: januaryAt(12 + i, 11 + i),
     notes: [],
   }));
 });
@@ -548,7 +553,7 @@ export const applications: Application[] = [];
   applications.push(buildApplication(candidates[candIndex], roles[3], {
     id: `app-4-${i + 1}`,
     stage: i === 0 ? 'reviewed' : 'new',
-    appliedAt: `2026-01-${13 + i}T${9 + i}:00:00Z`,
+    appliedAt: januaryAt(13 + i, 9 + i),
     notes: [],
   }));
 });
@@ -558,7 +563,7 @@ export const applications: Application[] = [];
   applications.push(buildApplication(candidates[candIndex], roles[4], {
     id: `app-5-${i + 1}`,
     stage: i === 0 ? 'shortlisted' : 'new',
-    appliedAt: `2026-01-${14 + i}T${10 + i}:00:00Z`,
+    appliedAt: januaryAt(14 + i, 10 + i),
     notes: [],
     skillProofSubmission: i === 0 ? {
       challengeId: 'tpl-3',
@@ -575,7 +580,7 @@ export const applications: Application[] = [];
   applications.push(buildApplication(candidates[candIndex], roles[5], {
     id: `app-6-${i + 1}`,
     stage: i === 0 ? 'shortlisted' : 'reviewed',
-    appliedAt: `2026-01-${14 + i}T${11 + i}:00:00Z`,
+    appliedAt: januaryAt(14 + i, 11 + i),
     notes: [],
   }));
 });
