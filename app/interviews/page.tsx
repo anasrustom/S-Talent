@@ -11,7 +11,6 @@ import { useToast } from '@/components/ui/Toast';
 export default function InterviewsPage() {
   const { addToast } = useToast();
   const [showAutoSchedule, setShowAutoSchedule] = useState(false);
-  const [isScheduling, setIsScheduling] = useState(false);
 
   const enrichedInterviews = interviews.map(interview => {
     const app = applications.find(a => a.id === interview.applicationId)!;
@@ -23,21 +22,17 @@ export default function InterviewsPage() {
 
   const upcomingInterviews = enrichedInterviews.filter(i => i.status === 'scheduled');
 
+  // Demo only: nothing is booked and no invites are sent
   const handleAutoSchedule = () => {
-    setIsScheduling(true);
-    
-    setTimeout(() => {
-      setIsScheduling(false);
-      setShowAutoSchedule(false);
-      addToast('3 interviews scheduled in the suggested slots', 'success');
-    }, 2000);
+    setShowAutoSchedule(false);
+    addToast('Demo: 3 sample slots held, no invites sent', 'success');
   };
 
   // Suggested slots are fixed sample data in this demo
   const recommendedSlots = [
-    { time: 'Tomorrow, 2:00 PM', reason: 'Both available • Preferred time', confidence: 95 },
-    { time: 'Jan 22, 10:00 AM', reason: 'Interviewer available • Morning slot', confidence: 88 },
-    { time: 'Jan 22, 3:00 PM', reason: 'Alternative time • Flexible', confidence: 82 },
+    { time: 'Tomorrow, 2:00 PM', reason: 'Both available • Preferred time' },
+    { time: 'In 2 days, 10:00 AM', reason: 'Interviewer available • Morning slot' },
+    { time: 'In 2 days, 3:00 PM', reason: 'Alternative time • Flexible' },
   ];
 
   return (
@@ -198,7 +193,7 @@ export default function InterviewsPage() {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            onClick={() => !isScheduling && setShowAutoSchedule(false)}
+            onClick={() => setShowAutoSchedule(false)}
           >
             <motion.div
               className="w-full max-w-2xl"
@@ -213,77 +208,50 @@ export default function InterviewsPage() {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-primary">Auto-scheduler</h2>
-                    <p className="text-sm text-muted">Suggested slots</p>
+                    <p className="text-sm text-muted">Demo: slots are sample data</p>
                   </div>
                 </div>
 
-                {isScheduling ? (
-                  <div className="py-12 text-center">
+                <div className="space-y-3 mb-6">
+                  {recommendedSlots.map((slot, index) => (
                     <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                      className="w-16 h-16 bg-snoonu-red/10 rounded-full flex items-center justify-center mx-auto mb-4"
+                      key={index}
+                      className="p-4 rounded-lg bg-secondary hover:bg-tertiary transition-colors cursor-pointer"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
                     >
-                      <Sparkles className="w-8 h-8 snoonu-red" />
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="font-semibold text-primary">{slot.time}</p>
+                          <p className="text-sm text-muted">{slot.reason}</p>
+                        </div>
+                      </div>
+                      {index === 0 && (
+                        <span className="inline-flex items-center gap-1 text-xs font-medium snoonu-red">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Recommended
+                        </span>
+                      )}
                     </motion.div>
-                    <p className="text-lg font-semibold text-primary">Scheduling interviews...</p>
-                    <p className="text-sm text-muted mt-2">Sending invites for the suggested slots</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="space-y-3 mb-6">
-                      {recommendedSlots.map((slot, index) => (
-                        <motion.div
-                          key={index}
-                          className="p-4 rounded-lg bg-secondary hover:bg-tertiary transition-colors cursor-pointer"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <p className="font-semibold text-primary">{slot.time}</p>
-                              <p className="text-sm text-muted">{slot.reason}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-success">{slot.confidence}%</span>
-                              <div className="w-16 h-2 bg-tertiary rounded-full overflow-hidden">
-                                <motion.div
-                                  className="h-full bg-success"
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${slot.confidence}%` }}
-                                  transition={{ delay: 0.5 + index * 0.1 }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          {index === 0 && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium snoonu-red">
-                              <CheckCircle2 className="w-3 h-3" />
-                              Recommended
-                            </span>
-                          )}
-                        </motion.div>
-                      ))}
-                    </div>
+                  ))}
+                </div>
 
-                    <div className="flex gap-3">
-                      <Button 
-                        variant="primary" 
-                        className="flex-1"
-                        onClick={handleAutoSchedule}
-                      >
-                        Schedule Best Slots
-                      </Button>
-                      <Button 
-                        variant="ghost"
-                        onClick={() => setShowAutoSchedule(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </>
-                )}
+                <div className="flex gap-3">
+                  <Button 
+                    variant="primary" 
+                    className="flex-1"
+                    onClick={handleAutoSchedule}
+                  >
+                    Hold These Slots
+                  </Button>
+                  <Button 
+                    variant="ghost"
+                    onClick={() => setShowAutoSchedule(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </Card>
             </motion.div>
           </motion.div>
