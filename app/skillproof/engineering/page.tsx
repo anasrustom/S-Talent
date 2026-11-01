@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Code, Play, CheckCircle2, XCircle, Clock, Award, ArrowLeft, Lightbulb, Terminal, Cpu } from 'lucide-react';
 import { Card } from '@/components/ui/common';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const challenge = {
   title: 'Two Sum Problem',
@@ -34,47 +34,136 @@ const challenge = {
 }`,
 };
 
-const testCases = [
-  { input: '[2, 7, 11, 15], 9', expected: '[0, 1]', status: null as null | 'pass' | 'fail' },
-  { input: '[3, 2, 4], 6', expected: '[1, 2]', status: null as null | 'pass' | 'fail' },
-  { input: '[3, 3], 6', expected: '[0, 1]', status: null as null | 'pass' | 'fail' },
+type TestResult = {
+  nums: number[];
+  target: number;
+  input: string;
+  expected: string;
+  status: null | 'pass' | 'fail';
+  got?: string;
+  ms?: number;
+};
+
+const testCases: TestResult[] = [
+  { nums: [2, 7, 11, 15], target: 9, input: '[2, 7, 11, 15], 9', expected: '[0, 1]', status: null },
+  { nums: [3, 2, 4], target: 6, input: '[3, 2, 4], 6', expected: '[1, 2]', status: null },
+  { nums: [3, 3], target: 6, input: '[3, 3], 6', expected: '[0, 1]', status: null },
 ];
+
+const RUN_TIMEOUT_MS = 2000;
+
+// Runs inside a throwaway Web Worker so an infinite loop cannot freeze the page.
+// The candidate's own code runs only in their own browser.
+const workerSource = `
+self.onmessage = (event) => {
+  const { source, cases } = event.data;
+  let twoSum;
+  try {
+    twoSum = new Function('"use strict";\\n' + source + '\\nreturn typeof twoSum === "function" ? twoSum : undefined;')();
+  } catch (err) {
+    self.postMessage({ error: 'Syntax error: ' + (err && err.message ? err.message : String(err)) });
+    return;
+  }
+  if (typeof twoSum !== 'function') {
+    self.postMessage({ error: 'Define a function named twoSum(nums, target)' });
+    return;
+  }
+  const results = cases.map((c) => {
+    const start = performance.now();
+    try {
+      const value = twoSum(c.nums.slice(), c.target);
+      return { got: JSON.stringify(value), value, ms: performance.now() - start };
+    } catch (err) {
+      return { got: 'Error: ' + (err && err.message ? err.message : String(err)), value: null, ms: performance.now() - start };
+    }
+  });
+  self.postMessage({ results });
+};
+`;
+
+// Any two distinct indices whose values add up to the target count as correct
+function isValidAnswer(value: unknown, nums: number[], target: number): boolean {
+  if (!Array.isArray(value) || value.length !== 2) return false;
+  const [a, b] = value;
+  return Number.isInteger(a) && Number.isInteger(b) && a !== b &&
+    a >= 0 && b >= 0 && a < nums.length && b < nums.length &&
+    nums[a] + nums[b] === target;
+}
+
+type WorkerReply = {
+  error?: string;
+  results?: { got: string; value: unknown; ms: number }[];
+};
+
+function runInWorker(source: string): Promise<WorkerReply> {
+  return new Promise(resolve => {
+    let worker: Worker;
+    let url = '';
+    try {
+      url = URL.createObjectURL(new Blob([workerSource], { type: 'text/javascript' }));
+      worker = new Worker(url);
+    } catch {
+      resolve({ error: 'This browser could not start the test runner' });
+      return;
+    }
+    const finish = (reply: WorkerReply) => {
+      clearTimeout(timer);
+      worker.terminate();
+      URL.revokeObjectURL(url);
+      resolve(reply);
+    };
+    const timer = setTimeout(
+      () => finish({ error: `Timed out after ${RUN_TIMEOUT_MS / 1000}s (infinite loop?)` }),
+      RUN_TIMEOUT_MS
+    );
+    worker.onmessage = (event: MessageEvent<WorkerReply>) => finish(event.data);
+    worker.onerror = (event) => {
+      event.preventDefault();
+      finish({ error: event.message || 'Your code threw an error' });
+    };
+    worker.postMessage({ source, cases: testCases.map(({ nums, target }) => ({ nums, target })) });
+  });
+}
 
 export default function EngineeringChallengePage() {
   const [code, setCode] = useState(challenge.starter);
   const [isRunning, setIsRunning] = useState(false);
   const [hasRun, setHasRun] = useState(false);
-  const [output, setOutput] = useState('');
-  const [testResults, setTestResults] = useState(testCases);
+  const [runError, setRunError] = useState<string | null>(null);
+  const [testResults, setTestResults] = useState<TestResult[]>(testCases);
   const [timeElapsed, setTimeElapsed] = useState(0);
-
-  const handleRun = () => {
-    setIsRunning(true);
-    setOutput('Running tests...\n');
-    
-    // Simulate test execution
-    setTimeout(() => {
-      const results = testCases.map((test, i) => {
-        // Simulate random pass/fail for demo
-        const passed = i < 2; // First two pass, last one fails
-        return { ...test, status: passed ? 'pass' as const : 'fail' as const };
-      });
-      
-      setTestResults(results);
-      setHasRun(true);
-      
-      const passedCount = results.filter(r => r.status === 'pass').length;
-      const outputText = results.map((r, i) => 
-        `Test ${i + 1}: ${r.status === 'pass' ? '✓ PASS' : '✗ FAIL'} - Input: ${r.input}`
-      ).join('\n');
-      
-      setOutput(outputText + `\n\n${passedCount}/${results.length} tests passed`);
-      setIsRunning(false);
-    }, 1500);
-  };
 
   const passedTests = testResults.filter(t => t.status === 'pass').length;
   const allPassed = passedTests === testResults.length && hasRun;
+
+  // Challenge timer: ticks every second until every test passes
+  useEffect(() => {
+    if (allPassed) return;
+    const interval = setInterval(() => setTimeElapsed(t => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, [allPassed]);
+
+  const handleRun = async () => {
+    setIsRunning(true);
+    const reply = await runInWorker(code);
+
+    if (reply.error || !reply.results) {
+      setRunError(reply.error ?? 'Unknown error');
+      setTestResults(testCases.map(test => ({ ...test, status: 'fail' })));
+    } else {
+      const results = reply.results;
+      setRunError(null);
+      setTestResults(testCases.map((test, i) => ({
+        ...test,
+        status: isValidAnswer(results[i].value, test.nums, test.target) ? 'pass' : 'fail',
+        got: results[i].got,
+        ms: results[i].ms,
+      })));
+    }
+
+    setHasRun(true);
+    setIsRunning(false);
+  };
 
   return (
     <MainLayout>
@@ -203,7 +292,7 @@ export default function EngineeringChallengePage() {
                       <div>
                         <h3 className="font-bold text-primary mb-2">Hint</h3>
                         <p className="text-sm text-secondary">
-                          Try using a hash map to store numbers you've seen and their indices. 
+                          Try using a hash map to store numbers you&apos;ve seen and their indices. 
                           This allows you to check if the complement (target - current number) exists in O(1) time.
                         </p>
                       </div>
@@ -225,7 +314,7 @@ export default function EngineeringChallengePage() {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted">
                     <Cpu className="w-3 h-3" />
-                    <span>Auto-save enabled</span>
+                    <span>Runs in your browser</span>
                   </div>
                 </div>
                 <div className="flex-1 p-6 bg-[#1e1e1e] overflow-auto">
@@ -269,6 +358,11 @@ export default function EngineeringChallengePage() {
                     </div>
                   ) : (
                     <div className="p-6 space-y-3">
+                      {runError && (
+                        <div className="p-4 rounded-lg border-2 bg-error/5 border-error/30">
+                          <p className="text-sm font-mono text-error">{runError}</p>
+                        </div>
+                      )}
                       {testResults.map((test, i) => (
                         <motion.div
                           key={i}
@@ -300,11 +394,16 @@ export default function EngineeringChallengePage() {
                                 <p className="text-sm font-mono text-secondary">
                                   <span className="text-muted">Expected:</span> {test.expected}
                                 </p>
+                                {test.status === 'fail' && test.got !== undefined && (
+                                  <p className="text-sm font-mono text-secondary">
+                                    <span className="text-muted">Got:</span> {test.got}
+                                  </p>
+                                )}
                               </div>
                             </div>
-                            {test.status === 'pass' && (
+                            {test.status === 'pass' && test.ms !== undefined && (
                               <div className="text-xs text-success bg-success/10 px-2 py-1 rounded">
-                                0.42ms
+                                {test.ms.toFixed(2)}ms
                               </div>
                             )}
                           </div>
